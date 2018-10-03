@@ -1,0 +1,30 @@
+{
+  "name": "ol-esri-style",
+  "version": "0.0.2",
+  "description": "Convert ESRI styles to OpenLayers styles",
+  "main": "index.js",
+  "scripts": {
+    "test": "parcel example/index.html",
+    "patch": "npm version patch --no-git-tag-version",
+    "minor": "npm version minor --no-git-tag-version",
+    "major": "npm version major --no-git-tag-version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bojko108/ol-esri-style.git"
+  },
+  "keywords": [
+    "openlayers",
+    "esri",
+    "styles"
+  ],
+  "author": "bojko108 <bojko108@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bojko108/ol-esri-style/issues"
+  },
+  "homepage": "https://github.com/bojko108/ol-esri-style#readme",
+  "devDependencies": {
+    "ol": "^5.2.0"
+  }
+}
