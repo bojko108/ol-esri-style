@@ -37,11 +37,12 @@ npm run test
 
 to build the example and run the server using [parcel][parcel-url].
 
-The example loads data from [https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0][link-test-data] and the style definition is from [https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/MapServer/0?f=pjson][link-test-style].
+The example loads data from [https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0][link-test-data] and the style definition is from [https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0?f=pjson][link-test-style].
 
-## Development dependencies
+## Dependencies
 
-[ol][link-npm-ol]
+- [ol][link-npm-ol]
+- [parcel][parcel-url]
 
 ## License
 
@@ -50,5 +51,5 @@ The MIT License (MIT).
 [link-npm-ol]: https://www.npmjs.com/package/ol
 [parcel-url]: https://parceljs.org
 [arcgis-docs]: https://developers.arcgis.com/documentation/common-data-types/renderer-objects.htm
-[link-test-style]: https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/MapServer/0?f=pjson
+[link-test-style]: https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0?f=pjson
 [link-test-data]: https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0

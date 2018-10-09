@@ -11,23 +11,21 @@ import { fromLonLat } from 'ol/proj.js';
 import { createXYZ } from 'ol/tilegrid.js';
 
 window.onload = function() {
+  let layerUrl = 'https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0';
+
   $.ajax({
-    url: 'https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/MapServer/0?f=pjson',
+    url: `${layerUrl}?f=pjson`,
     dataType: 'jsonp',
     success: response => {
       if (response.error) {
         alert(`${response.error.message}\n${response.error.details.join('\n')}`);
       } else {
-        
         // read ESRI style definition
         const esriStyle = new EsriStyle(response.drawingInfo);
-
-        const serviceUrl = 'https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/';
-        const layer = '0';
         const esrijsonFormat = new EsriJSON();
         const vectorSource = new VectorSource({
           loader: (extent, resolution, projection) => {
-            let url = `${serviceUrl}${layer}/query/?f=json&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=${encodeURIComponent(
+            let url = `${layerUrl}/query/?f=json&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=${encodeURIComponent(
               '{"xmin":' +
                 extent[0] +
                 ',"ymin":' +

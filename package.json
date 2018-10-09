@@ -1,6 +1,6 @@
 {
   "name": "ol-esri-style",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Convert ESRI styles to OpenLayers styles",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,10 @@
     "url": "https://github.com/bojko108/ol-esri-style/issues"
   },
   "homepage": "https://github.com/bojko108/ol-esri-style#readme",
-  "devDependencies": {
+  "dependencies": {
     "ol": "^5.2.0"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.10.2"
   }
 }
