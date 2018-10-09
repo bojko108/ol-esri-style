@@ -11,15 +11,16 @@ Import as ES6 module:
 ```javascript
 import EsriStyle from 'ol-esri-style';
 
-fetch('arcgis_layer_configuration_url').then(result => {
+fetch('arcgis_layer_configuration_url_?f=pjson').then(result => {
   // read ESRI style definition
-  const esriStyle = new EsriStyle(result.drawingInfo);
+  const esriStyle = new EsriStyle(result.drawingInfo, 'EPSG:3857');
   // create a new vector layer
   const vector = new VectorLayer({
     source: vectorSource,
+    // set layer style
     style: (feature, resolution) => {
-      // set layer style
-      return esriStyle.getStyleFor(feature, resolution);
+      let showLabels = document.getElementById('showLabels').checked;
+      return esriStyle.getStyleFor(feature, resolution, showLabels);
     }
   });
   ...

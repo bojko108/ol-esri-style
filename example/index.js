@@ -22,12 +22,9 @@ window.onload = function() {
         // read ESRI style definition
         const esriStyle = new EsriStyle(response.drawingInfo);
 
-
         const serviceUrl = 'https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/';
         const layer = '0';
-
         const esrijsonFormat = new EsriJSON();
-
         const vectorSource = new VectorSource({
           loader: (extent, resolution, projection) => {
             let url = `${serviceUrl}${layer}/query/?f=json&returnGeometry=true&spatialRel=esriSpatialRelIntersects&geometry=${encodeURIComponent(
@@ -70,7 +67,8 @@ window.onload = function() {
           source: vectorSource,
           style: (feature, resolution) => {
             // set layer style
-            return esriStyle.getStyleFor(feature, resolution);
+            let showLabels = document.getElementById('showLabels').checked;
+            return esriStyle.getStyleFor(feature, resolution, showLabels);
           }
         });
 
