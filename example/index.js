@@ -1,4 +1,4 @@
-import EsriStyle from '../index.js';
+import EsriStyle from '../src/index.js';
 
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';

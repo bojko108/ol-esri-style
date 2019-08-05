@@ -5,7 +5,7 @@ import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
 import Circle from 'ol/style/Circle';
 import Icon from 'ol/style/Icon';
-import { createLabelsForResolutions, formatLabelText } from './LabelStyle';
+import { createLabelsForResolutions, formatLabelText } from './old - LabelStyle';
 
 /**
  * Class for converting ESRI styles to OpenLayers styles
