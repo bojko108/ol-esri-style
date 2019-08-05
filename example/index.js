@@ -1,4 +1,4 @@
-import EsriStyle from '../src/index.js';
+import { readEsriStyleDefinitions } from '../src/index.js';
 
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
@@ -21,7 +21,8 @@ window.onload = function() {
         alert(`${response.error.message}\n${response.error.details.join('\n')}`);
       } else {
         // read ESRI style definition
-        const esriStyle = new EsriStyle(response.drawingInfo);
+        const { featureStyles, labelStyles } = readEsriStyleDefinitions(response.drawingInfo);
+
         const esrijsonFormat = new EsriJSON();
         const vectorSource = new VectorSource({
           loader: (extent, resolution, projection) => {
@@ -66,6 +67,7 @@ window.onload = function() {
           style: (feature, resolution) => {
             // set layer style
             let showLabels = document.getElementById('showLabels').checked;
+            
             return esriStyle.getStyleFor(feature, resolution, showLabels);
           }
         });

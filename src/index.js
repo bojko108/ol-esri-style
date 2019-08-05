@@ -1,4 +1,3 @@
-
 /**
  * Creates a new OL style.
  *
@@ -13,6 +12,9 @@ export const createFeatureStyle = styleData => {};
  * @return {import('ol/style/Text')}
  */
 export const createLabelStyle = labelData => {};
+
+// including the label
+export const getStyleForFeature = (feature, resolution) => {};
 
 /**
  *
