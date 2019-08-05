@@ -2,6 +2,10 @@
 
 ## Info
 
+# BREAKING CHANGES
+
+Version 2.0 has breaking changes!
+
 This module can convert ESRI style definition to OpenLayers style function. ESRI style definition must be in JSON format - [https://developers.arcgis.com/documentation/common-data-types/renderer-objects.htm][arcgis-docs]
 
 ## Getting started
