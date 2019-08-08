@@ -39,13 +39,11 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
       featureStyles.push(readSymbol(renderer.symbol));
       break;
     case 'uniqueValue':
-      if (renderer.defaultSymbol) {
-        featureStyles.push(readSymbol(renderer.defaultSymbol));
-      }
-
       const uniqueFieldValues = filterUniqueValues(renderer.uniqueValueInfos, renderer.fieldDelimiter);
 
-      featureStyles = uniqueFieldValues.map(data => {
+      for (let i = 0; i < uniqueFieldValues.length; i++) {
+        const uniqueField = uniqueFieldValues[i];
+
         /**
          * @type {Array<import("./types").FilterType>}
          */
@@ -55,31 +53,35 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
           filters.push({
             attributeName: renderer.field1,
             operator: 'in',
-            validValue: data.field1Values
+            validValue: uniqueField.field1Values
           });
         }
         if (renderer.field2) {
           filters.push({
             attributeName: renderer.field2,
             operator: 'in',
-            validValue: data.field2Values
+            validValue: uniqueField.field2Values
           });
         }
         if (renderer.field3) {
           filters.push({
             attributeName: renderer.field3,
             operator: 'in',
-            validValue: data.field3Values
+            validValue: uniqueField.field3Values
           });
         }
 
-        const style = readSymbol(data.symbol);
-        return {
+        const style = readSymbol(uniqueField.symbol);
+        featureStyles.push({
           filters,
-          title: data.title,
+          title: uniqueField.title,
           ...style
-        };
-      });
+        });
+      }
+
+      if (renderer.defaultSymbol) {
+        featureStyles.push(readSymbol(renderer.defaultSymbol));
+      }
 
       break;
     default:
