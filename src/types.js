@@ -2,9 +2,6 @@
  * @typedef StyleType
  * @property {String} [title]
  * @property {Array<FilterType>} [filters=[]]
- * @property {String} attributeName
- * @property {String} operator
- * @property {String} validValues
  * @property {LabelType} [font]
  * @property {Object} [icon]
  * @property {String} [icon.type]
@@ -145,7 +142,7 @@
 
 /**
  * @typedef FilterType
- * @property {!String} attributeName
+ * @property {!String} field
  * @property {!String} operator
- * @property {!Object} validValue
+ * @property {!Object} value
  */

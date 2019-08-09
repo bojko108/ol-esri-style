@@ -51,23 +51,23 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
 
         if (renderer.field1) {
           filters.push({
-            attributeName: renderer.field1,
+            field: renderer.field1,
             operator: 'in',
-            validValue: uniqueField.field1Values
+            value: uniqueField.field1Values
           });
         }
         if (renderer.field2) {
           filters.push({
-            attributeName: renderer.field2,
+            field: renderer.field2,
             operator: 'in',
-            validValue: uniqueField.field2Values
+            value: uniqueField.field2Values
           });
         }
         if (renderer.field3) {
           filters.push({
-            attributeName: renderer.field3,
+            field: renderer.field3,
             operator: 'in',
-            validValue: uniqueField.field3Values
+            value: uniqueField.field3Values
           });
         }
 
