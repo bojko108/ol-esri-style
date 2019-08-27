@@ -9,7 +9,7 @@ This module can convert ESRI style definition to OpenLayers style function. ESRI
 Import as ES6 module:
 
 ```javascript
-import { createStyleFunction, setMapProjection } from 'ol-esri-style';
+import { createStyleFunctionFromUrl, setMapProjection } from 'ol-esri-style';
 
 // create a new vector layer
 const vector = new VectorLayer({
@@ -20,22 +20,20 @@ const vector = new VectorLayer({
 setMapProjection(map.getView().getProjection());
 
 // set layer style
-createStyleFunction('arcgis_server_layer_url').then(styleFunction => {
+createStyleFunctionFromUrl('arcgis_server_layer_url').then(styleFunction => {
   vector.setStyle(styleFunction);
 });
 ```
 
 ## Example
 
-You can check the example stored in `/test` directory. Run:
+To check the example stored in `/test` directory run:
 
 ```bash
 npm run test
 ```
 
-to build the example and run the server using [parcel][parcel-url].
-
-The example loads data from [https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0][link-test-data] and the style definition is from [https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0?f=pjson][link-test-style].
+The example loads data from [https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0][link-test-data] and the style definition is from [https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0?f=json][link-test-style].
 
 ## Dependencies
 
@@ -49,5 +47,5 @@ The MIT License (MIT).
 [link-npm-ol]: https://www.npmjs.com/package/ol
 [parcel-url]: https://parceljs.org
 [arcgis-docs]: https://developers.arcgis.com/documentation/common-data-types/renderer-objects.htm
-[link-test-style]: https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0?f=pjson
+[link-test-style]: https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0?f=json
 [link-test-data]: https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0

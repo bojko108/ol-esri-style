@@ -21,66 +21,77 @@ export const setMapProjection = projection => {
  * @param {!String} layerUrl - ArcGIS REST URL to the layer
  * @return {Promise<Function>} function which styles features
  */
-export const createStyleFunction = layerUrl => {
+export const createStyleFunctionFromUrl = layerUrl => {
+  return fetch(`${layerUrl}?f=json`)
+    .then(responce => {
+      return responce.json();
+    })
+    .then(esriStyleDefinition => {
+      return createStyleFunction(esriStyleDefinition);
+    });
+};
+
+/**
+ * Creates OpenLayers style function based on ESRI drawing info
+ * @param {!Object} esriLayerInfoJson
+ * @param {import('./types').EsriRenderer} esriLayerInfoJson.renderer - see https://developers.arcgis.com/documentation/common-data-types/renderer-objects.htm for more info
+ * @param {Array<import('./types').EsriLabelDefinition>} esriLayerInfoJson.labelingInfo - see https://developers.arcgis.com/documentation/common-data-types/labeling-objects.htm for more info
+ * @return {Promise<Function>} function which styles features
+ */
+export const createStyleFunction = esriLayerInfoJson => {
   return new Promise((yes, no) => {
-    return fetch(`${layerUrl}?f=json`)
-      .then(responce => {
-        return responce.json();
-      })
-      .then(esriStyleDefinition => {
-        let { featureStyles, labelStyles } = readEsriStyleDefinitions(esriStyleDefinition.drawingInfo);
-        for (let i = 0; i < featureStyles.length; i++) {
-          featureStyles[i].style = createFeatureStyle(featureStyles[i]);
-        }
-        for (let i = 0; i < labelStyles.length; i++) {
-          labelStyles[i].maxResolution = getMapResolutionFromScale(labelStyles[i].maxScale || 1000);
-          labelStyles[i].minResolution = getMapResolutionFromScale(labelStyles[i].minScale || 1);
-          labelStyles[i].label = labelStyles[i].text;
-          labelStyles[i].style = new Style({ text: createLabelStyle(labelStyles[i]) });
-        }
+    let { featureStyles, labelStyles } = readEsriStyleDefinitions(esriLayerInfoJson.drawingInfo);
+    for (let i = 0; i < featureStyles.length; i++) {
+      featureStyles[i].style = createFeatureStyle(featureStyles[i]);
+    }
+    for (let i = 0; i < labelStyles.length; i++) {
+      labelStyles[i].maxResolution = getMapResolutionFromScale(labelStyles[i].maxScale || 1000);
+      labelStyles[i].minResolution = getMapResolutionFromScale(labelStyles[i].minScale || 1);
+      labelStyles[i].label = labelStyles[i].text;
+      labelStyles[i].style = new Style({ text: createLabelStyle(labelStyles[i]) });
+    }
 
-        const styleFunction = (feature, resolution) => {
-          let styles = [];
-          const featureStyle = featureStyles.find(({ filters }) => {
-            if (filters) {
-              return filters.every(({ field, value }) => {
-                const currentValue = feature.get(field);
-                const valuesIn = value.split(',').map(value => value.toString());
-                return valuesIn.indexOf(currentValue.toString()) > -1;
-              });
-            } else {
-              // will return the first style (default one)
-              return true;
-            }
+    const styleFunction = (feature, resolution) => {
+      let styles = [];
+      const featureStyle = featureStyles.find(({ filters }) => {
+        if (filters) {
+          return filters.every(({ field, value }) => {
+            const currentValue = feature.get(field);
+            const valuesIn = value.split(',').map(value => value.toString());
+            return valuesIn.indexOf(currentValue.toString()) > -1;
           });
-
-          if (featureStyle) {
-            styles.push(featureStyle.style);
-          }
-
-          const labelStyle = labelStyles.find(label => {
-            return label.maxResolution >= resolution && resolution >= label.minResolution;
-          });
-
-          if (labelStyle && labelStyle.style) {
-            const text = getFormattedLabel(feature, labelStyle.label);
-            labelStyle.style.getText().setText(text);
-            styles.push(labelStyle.style);
-          }
-
-          // push labels!
-
-          return styles.length > 0 ? styles : null;
-        };
-
-        yes(styleFunction);
+        } else {
+          // will return the first style (default one)
+          return true;
+        }
       });
+
+      if (featureStyle) {
+        styles.push(featureStyle.style);
+      }
+
+      const labelStyle = labelStyles.find(label => {
+        return label.maxResolution >= resolution && resolution >= label.minResolution;
+      });
+
+      if (labelStyle && labelStyle.style) {
+        const text = getFormattedLabel(feature, labelStyle.label);
+        labelStyle.style.getText().setText(text);
+        styles.push(labelStyle.style);
+      }
+
+      // push labels!
+
+      return styles.length > 0 ? styles : null;
+    };
+
+    yes(styleFunction);
   });
 };
 
 /**
  * Reads ESRI Style definitions into readable style definition
- * @param {Object} esriLayerInfoJson
+ * @param {!Object} esriLayerInfoJson
  * @param {import('./types').EsriRenderer} esriLayerInfoJson.renderer - see https://developers.arcgis.com/documentation/common-data-types/renderer-objects.htm for more info
  * @param {Array<import('./types').EsriLabelDefinition>} esriLayerInfoJson.labelingInfo - see https://developers.arcgis.com/documentation/common-data-types/labeling-objects.htm for more info
  * @return {Object} styles

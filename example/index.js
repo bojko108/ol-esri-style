@@ -1,4 +1,4 @@
-import { createStyleFunction, setMapProjection } from '../src/index.js';
+import { createStyleFunction, createStyleFunctionFromUrl, setMapProjection } from '../src/index.js';
 
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
@@ -11,8 +11,9 @@ import { fromLonLat } from 'ol/proj.js';
 import { createXYZ } from 'ol/tilegrid.js';
 
 window.onload = function() {
-  // const layerUrl = 'https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0';
-  const layerUrl = 'http://lgapp:6080/arcgis/rest/services/MIS/MapServer/0';
+  const layerUrl =
+    'https://cors-anywhere.herokuapp.com/https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0';
+  // const layerUrl = 'http://lgapp:6080/arcgis/rest/services/MIS/MapServer/0';
 
   const esrijsonFormat = new EsriJSON();
   const vectorSource = new VectorSource({
@@ -61,13 +62,14 @@ window.onload = function() {
     layers: [raster, vector],
     target: document.getElementById('map'),
     view: new View({
-      center: fromLonLat([23.3, 42.7]),
+      center: fromLonLat([-98.293401, 38.646303]),
+      // center: fromLonLat([23.3, 42.7]),
       zoom: 12
     })
   });
 
   setMapProjection(map.getView().getProjection());
-  createStyleFunction(layerUrl).then(styleFunction => {
+  createStyleFunctionFromUrl(layerUrl).then(styleFunction => {
     vector.setStyle(styleFunction);
   });
 
@@ -80,7 +82,7 @@ window.onload = function() {
       let info = [];
       let i, ii;
       for (i = 0, ii = features.length; i < ii; ++i) {
-        info.push(features[i].get('field_name'));
+        info.push(features[i].get('NAZEV_STANICE') || features[i].get('field_name'));
       }
       document.getElementById('info').innerHTML = info.join(', ') || '(unknown)';
       map.getTarget().style.cursor = 'pointer';
