@@ -59,8 +59,6 @@
  * @typedef FeatureStyle
  * @property {Array<import('../helpers/filters').FilterType>} [filters]
  * @property {import('../../style/Style').default} style
- * @property {import('../../style/Style').default} [selected] ---------------------------
- * @property {import('../../style/Style').default} [highlighted] ------------------------
  */
 
 /**

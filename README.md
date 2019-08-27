@@ -2,10 +2,6 @@
 
 ## Info
 
-# BREAKING CHANGES
-
-Version 2.0 has breaking changes!
-
 This module can convert ESRI style definition to OpenLayers style function. ESRI style definition must be in JSON format - [https://developers.arcgis.com/documentation/common-data-types/renderer-objects.htm][arcgis-docs]
 
 ## Getting started
@@ -13,21 +9,19 @@ This module can convert ESRI style definition to OpenLayers style function. ESRI
 Import as ES6 module:
 
 ```javascript
-import EsriStyle from 'ol-esri-style';
+import { createStyleFunction, setMapProjection } from 'ol-esri-style';
 
-fetch('arcgis_layer_configuration_url_?f=pjson').then(result => {
-  // read ESRI style definition
-  const esriStyle = new EsriStyle(result.drawingInfo, 'EPSG:3857');
-  // create a new vector layer
-  const vector = new VectorLayer({
-    source: vectorSource,
-    // set layer style
-    style: (feature, resolution) => {
-      let showLabels = document.getElementById('showLabels').checked;
-      return esriStyle.getStyleFor(feature, resolution, showLabels);
-    }
-  });
+// create a new vector layer
+const vector = new VectorLayer({
   ...
+});
+
+// This is need for labeling features. Visible resolutions for the labels are calculated using map projection units.
+setMapProjection(map.getView().getProjection());
+
+// set layer style
+createStyleFunction('arcgis_server_layer_url').then(styleFunction => {
+  vector.setStyle(styleFunction);
 });
 ```
 

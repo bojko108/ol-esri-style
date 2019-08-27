@@ -1,26 +1,91 @@
-/**
- * Creates a new OL style.
- *
- * @param {!import("./types").StyleType} [styleData]
- * @return {import('ol/style/Style')}
- */
-export const createFeatureStyle = styleData => {};
-/**
- * Creates a new OL text style
- *
- * @param {import("./types").LabelType} labelData
- * @return {import('ol/style/Text')}
- */
-export const createLabelStyle = labelData => {};
-
-// including the label
-export const getStyleForFeature = (feature, resolution) => {};
+import { METERS_PER_UNIT } from 'ol/proj/Units';
+import Style from 'ol/style/Style';
+import { createFeatureStyle, createLabelStyle } from './styles';
+import { getFormattedLabel } from './formatters';
 
 /**
- *
+ * Map projection - used for labeling features
+ * @type {import('ol/proj/Projection')}
+ */
+let mapProjection = null;
+/**
+ * Set map projection used for labeling features
+ * @param {import('ol/proj/Projection')} projection
+ */
+export const setMapProjection = projection => {
+  mapProjection = projection;
+};
+
+/**
+ * Creates OpenLayers style function based on ESRI drawing info
+ * @param {!String} layerUrl - ArcGIS REST URL to the layer
+ * @return {Promise<Function>} function which styles features
+ */
+export const createStyleFunction = layerUrl => {
+  return new Promise((yes, no) => {
+    return fetch(`${layerUrl}?f=json`)
+      .then(responce => {
+        return responce.json();
+      })
+      .then(esriStyleDefinition => {
+        let { featureStyles, labelStyles } = readEsriStyleDefinitions(esriStyleDefinition.drawingInfo);
+        for (let i = 0; i < featureStyles.length; i++) {
+          featureStyles[i].style = createFeatureStyle(featureStyles[i]);
+        }
+        for (let i = 0; i < labelStyles.length; i++) {
+          labelStyles[i].maxResolution = getMapResolutionFromScale(labelStyles[i].maxScale || 1000);
+          labelStyles[i].minResolution = getMapResolutionFromScale(labelStyles[i].minScale || 1);
+          labelStyles[i].label = labelStyles[i].text;
+          labelStyles[i].style = new Style({ text: createLabelStyle(labelStyles[i]) });
+        }
+
+        const styleFunction = (feature, resolution) => {
+          let styles = [];
+          const featureStyle = featureStyles.find(({ filters }) => {
+            if (filters) {
+              return filters.every(({ field, value }) => {
+                const currentValue = feature.get(field);
+                const valuesIn = value.split(',').map(value => value.toString());
+                return valuesIn.indexOf(currentValue.toString()) > -1;
+              });
+            } else {
+              // will return the first style (default one)
+              return true;
+            }
+          });
+
+          if (featureStyle) {
+            styles.push(featureStyle.style);
+          }
+
+          const labelStyle = labelStyles.find(label => {
+            return label.maxResolution >= resolution && resolution >= label.minResolution;
+          });
+
+          if (labelStyle && labelStyle.style) {
+            const text = getFormattedLabel(feature, labelStyle.label);
+            labelStyle.style.getText().setText(text);
+            styles.push(labelStyle.style);
+          }
+
+          // push labels!
+
+          return styles.length > 0 ? styles : null;
+        };
+
+        yes(styleFunction);
+      });
+  });
+};
+
+/**
+ * Reads ESRI Style definitions into readable style definition
  * @param {Object} esriLayerInfoJson
  * @param {import('./types').EsriRenderer} esriLayerInfoJson.renderer - see https://developers.arcgis.com/documentation/common-data-types/renderer-objects.htm for more info
  * @param {Array<import('./types').EsriLabelDefinition>} esriLayerInfoJson.labelingInfo - see https://developers.arcgis.com/documentation/common-data-types/labeling-objects.htm for more info
+ * @return {Object} styles
+ * @property {Array<import('./types').StyleType>} [styles.featureStyles]
+ * @property {Array<import('./types').LabelType>} [styles.labelStyles]
  */
 export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
   if (!renderer) throw 'renderer is not defined';
@@ -32,7 +97,7 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
   /**
    * @type {Array<import("./types").LabelType>}
    */
-  let labelStyles = labelingInfo ? readLabels(labelingInfo) : undefined;
+  let labelStyles = labelingInfo ? readLabels(labelingInfo) : [];
 
   switch (renderer.type) {
     case 'simple':
@@ -92,8 +157,7 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
 };
 
 /**
- * reads label definitions for different map scales
- *
+ * Reads label definitions for different map scales
  * @param {!Array<import('./types').EsriLabelDefinition>} labelingInfo
  * @return {Array<import('./types').LabelType>}
  */
@@ -113,7 +177,6 @@ const readLabels = labelingInfo => {
 
 /**
  * Convert ESRI style data to a readable style definition
- *
  * @param {!esriPMS|esriSFS|esriSLS|esriSMS|esriTS} symbol - ESRI style definition
  * @param {!String} symbol.type - valid values are: `esriSMS`, `esriSLS`, `esriSFS`, `esriPMS` and `esriTS`
  * @return {import("./types").StyleType}
@@ -233,4 +296,15 @@ const filterUniqueValues = (styles, delimiter) => {
   });
 
   return result;
+};
+
+/**
+ * @param {!Number} scale
+ * @return {Number}
+ */
+const getMapResolutionFromScale = scale => {
+  if (mapProjection) {
+    const mpu = METERS_PER_UNIT[mapProjection.getUnits()];
+    return scale / (mpu * 39.37 * (25.4 / 0.28));
+  }
 };
