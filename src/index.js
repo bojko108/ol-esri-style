@@ -177,8 +177,7 @@ const readLabels = labelingInfo => {
     let labelStyle = readSymbol(labelDefinition.symbol);
     labelStyle.maxScale = labelDefinition.minScale || 1000;
     labelStyle.minScale = labelDefinition.maxScale || 0;
-    labelDefinition.labelExpression = || "";
-    labelStyle.text = labelDefinition.labelExpression
+    labelStyle.text = (labelDefinition.labelExpression || "")
       .replace(/\[/g, '{')
       .replace(/\]/g, '}')
       .replace(/ CONCAT  NEWLINE  CONCAT /g, '\n')
