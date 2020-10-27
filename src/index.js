@@ -55,10 +55,19 @@ export const createStyleFunction = esriLayerInfoJson => {
       let styles = [];
       const featureStyle = featureStyles.find(({ filters }) => {
         if (filters) {
-          return filters.every(({ field, value }) => {
+          return filters.every(({ field, value, operator }) => {
             const currentValue = feature.get(field);
-            const valuesIn = value.split(',').map(value => value.toString());
-            return valuesIn.indexOf(currentValue.toString()) > -1;
+            switch (operator) {
+              case 'in':
+                const valuesIn = value.split(',').map(value => value.toString());
+                return valuesIn.indexOf(currentValue.toString()) > -1;
+
+              case 'between':
+                return value.lowerBound <= currentValue && currentValue <= value.upperBound;
+
+              default:
+                throw 'Invalid operator ' + operator;
+            }
           });
         } else {
           // will return the first style (default one)
@@ -158,7 +167,38 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
       if (renderer.defaultSymbol) {
         featureStyles.push(readSymbol(renderer.defaultSymbol));
       }
+      break;
+    case 'classBreaks':
+      const classBreakField = renderer.field;
+      const classBreakMinValue = renderer.minValue;
+      const classBreakInfos = renderer.classBreakInfos;
+      for (let i = 0; i < classBreakInfos.length; ++i) {
+        const classBreakInfo = classBreakInfos[i];
+        const style = readSymbol(classBreakInfo.symbol);
 
+        /**
+         * @type {Array<import("./types").FilterType>}
+         */
+        const filters = [
+          {
+            field: classBreakField,
+            operator: 'between',
+            value: {
+              lowerBound: classBreakInfo.hasOwnProperty('classMinValue') ? classBreakInfo.classMinValue : classBreakMinValue,
+              upperBound: classBreakInfo.classMaxValue
+            }
+          }
+        ];
+
+        featureStyles.push({
+          filters,
+          ...style
+        });
+      }
+
+      if (renderer.defaultSymbol) {
+        featureStyles.push(readSymbol(renderer.defaultSymbol));
+      }
       break;
     default:
       throw `"Renderer type "${renderer.type}" is not implemented yet`;
@@ -177,7 +217,7 @@ const readLabels = labelingInfo => {
     let labelStyle = readSymbol(labelDefinition.symbol);
     labelStyle.maxScale = labelDefinition.minScale || 1000;
     labelStyle.minScale = labelDefinition.maxScale || 0;
-    labelStyle.text = (labelDefinition.labelExpression || "")
+    labelStyle.text = (labelDefinition.labelExpression || '')
       .replace(/\[/g, '{')
       .replace(/\]/g, '}')
       .replace(/ CONCAT  NEWLINE  CONCAT /g, '\n')
