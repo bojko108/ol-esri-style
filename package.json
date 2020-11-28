@@ -1,6 +1,6 @@
 {
   "name": "ol-esri-style",
-  "version": "2.0.6",
+  "version": "2.0.7",
   "description": "Convert ESRI styles to OpenLayers styles",
   "main": "src/index.js",
   "scripts": {
@@ -28,6 +28,6 @@
     "ol": "^6.4.3"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.10.2"
+    "parcel": "^2.0.0-beta.1"
   }
 }

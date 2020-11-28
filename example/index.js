@@ -1,3 +1,4 @@
+import 'ol/ol.css';
 import { createStyleFunction, createStyleFunctionFromUrl, setMapProjection } from '../src/index.js';
 
 import Map from 'ol/Map.js';
