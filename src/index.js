@@ -260,7 +260,7 @@ const readSymbol = symbol => {
         }
       };
     case 'esriSFS':
-      let style = readSymbol(symbol.outline);
+      let style = symbol.outline ? readSymbol(symbol.outline) : {};
       style.fill = { color: `rgba(${symbol.color.join(',')})` };
       return style;
     case 'esriPMS':
