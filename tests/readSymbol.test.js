@@ -2,6 +2,88 @@ import { assert } from 'chai';
 import { readSymbol } from '../src/index';
 
 describe('[readSymbol() tests]', () => {
+  it('should throw exception if symbol type is not defined', () => {
+    const symbolDefinition = {};
+    assert.throw(() => {
+      readSymbol(symbolDefinition);
+    }, `Symbol type "${symbolDefinition.type}" is not implemented yet`);
+  });
+
+  it('should read esriSLS symbol', () => {
+    const symbolDefinition = {
+      type: 'esriSLS',
+      style: 'esriSLSSolid',
+      color: [255, 255, 0, 255],
+      width: 1.5,
+    };
+
+    const symbol = readSymbol(symbolDefinition);
+
+    assert.isDefined(symbol);
+    assert.isDefined(symbol.stroke);
+    assert.equal(symbol.stroke.color, `rgba(${symbolDefinition.color.join(',')})`);
+    assert.equal(symbol.stroke.width, symbolDefinition.width);
+    assert.isArray(symbol.stroke.lineDash);
+    assert.isEmpty(symbol.stroke.lineDash);
+  });
+
+  it('should read esriSLS symbol with dashes', () => {
+    const symbolDefinition = {
+      type: 'esriSLS',
+      style: 'esriSLSDash',
+      color: [255, 255, 0, 255],
+      width: 1.5,
+    };
+
+    const symbol = readSymbol(symbolDefinition);
+
+    assert.isDefined(symbol);
+    assert.isDefined(symbol.stroke);
+    assert.equal(symbol.stroke.color, `rgba(${symbolDefinition.color.join(',')})`);
+    assert.equal(symbol.stroke.width, symbolDefinition.width);
+    assert.isArray(symbol.stroke.lineDash);
+    assert.equal(symbol.stroke.lineDash.length, 1);
+    assert.equal(symbol.stroke.lineDash[0], 10);
+  });
+
+  it('should read esriSFS symbol without stroke', () => {
+    const symbolDefinition = {
+      type: 'esriSFS',
+      style: 'esriSFSBackwardDiagonal',
+      color: [210, 210, 210, 140],
+    };
+
+    const symbol = readSymbol(symbolDefinition);
+
+    assert.isDefined(symbol);
+    assert.isDefined(symbol.fill);
+    assert.equal(symbol.fill.color, `rgba(${symbolDefinition.color.join(',')})`);
+  });
+
+  it('should read esriSFS symbol with stroke', () => {
+    const symbolDefinition = {
+      type: 'esriSFS',
+      style: 'esriSFSBackwardDiagonal',
+      color: [210, 210, 210, 140],
+      outline: {
+        type: 'esriSLS',
+        style: 'esriSLSSolid',
+        color: [102, 119, 205, 140],
+        width: 1.5,
+      },
+    };
+
+    const symbol = readSymbol(symbolDefinition);
+
+    assert.isDefined(symbol);
+    assert.isDefined(symbol.fill);
+    assert.equal(symbol.fill.color, `rgba(${symbolDefinition.color.join(',')})`);
+    assert.isDefined(symbol.stroke);
+    assert.equal(symbol.stroke.width, symbolDefinition.outline.width);
+    assert.isArray(symbol.stroke.lineDash);
+    assert.isEmpty(symbol.stroke.lineDash);
+  });
+
   it('should read esriPMS symbol', () => {
     const symbolDefinition = {
       type: 'esriPMS',
@@ -22,5 +104,50 @@ describe('[readSymbol() tests]', () => {
     assert.isDefined(symbol.icon);
     assert.equal(symbol.icon.rotation, symbolDefinition.angle);
     assert.equal(symbol.icon.src, `data:image/png;base64,${symbolDefinition.imageData}`);
+  });
+
+  it('should read esriTS symbol', () => {
+    const symbolDefinition = {
+      type: 'esriTS',
+      color: [102, 119, 205, 255],
+      backgroundColor: null,
+      borderLineColor: null,
+      borderLineSize: null,
+      verticalAlignment: 'bottom',
+      horizontalAlignment: 'center',
+      rightToLeft: false,
+      angle: 0,
+      xoffset: 0,
+      yoffset: 0,
+      kerning: true,
+      haloColor: null,
+      haloSize: null,
+      font: {
+        family: 'Cambria',
+        size: 10,
+        style: 'normal',
+        weight: 'bold',
+        decoration: 'none',
+      },
+    };
+
+    const symbol = readSymbol(symbolDefinition);
+
+    assert.isDefined(symbol);
+    assert.isUndefined(symbol.text);
+    assert.equal(
+      symbol.font,
+      `${symbolDefinition.font.style} ${symbolDefinition.font.weight} ${symbolDefinition.font.size}pt ${symbolDefinition.font.family}`
+    );
+    assert.equal(symbol.offsetX, symbolDefinition.xoffset + 20);
+    assert.equal(symbol.offsetY, symbolDefinition.yoffset - 10);
+    assert.equal(symbol.textAlign, symbolDefinition.horizontalAlignment);
+    assert.equal(symbol.textBaseline, symbolDefinition.verticalAlignment);
+    assert.equal(symbol.angle, symbolDefinition.angle);
+    assert.isDefined(symbol.fill);
+    assert.equal(symbol.fill.color, `rgba(${symbolDefinition.color.join(',')})`);
+    assert.isNull(symbol.stroke);
+    assert.isNull(symbol.backgroundFill);
+    assert.isNull(symbol.backgroundStroke);
   });
 });
