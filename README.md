@@ -27,10 +27,10 @@ createStyleFunctionFromUrl('arcgis_server_layer_url').then(styleFunction => {
 
 ## Example
 
-To check the example stored in `/test` directory run:
+To check the example stored in `/example` directory run:
 
 ```bash
-npm run test
+npm run dev
 ```
 
 The example loads data from [https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0][link-test-data] and the style definition is from [https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Petroleum/KSFields/FeatureServer/0?f=json][link-test-style].

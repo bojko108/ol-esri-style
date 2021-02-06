@@ -12,7 +12,7 @@ let mapProjection = null;
  * Set map projection used for labeling features
  * @param {import('ol/proj/Projection')} projection
  */
-export const setMapProjection = projection => {
+export const setMapProjection = (projection) => {
   mapProjection = projection;
 };
 
@@ -21,12 +21,12 @@ export const setMapProjection = projection => {
  * @param {!String} layerUrl - ArcGIS REST URL to the layer
  * @return {Promise<Function>} function which styles features
  */
-export const createStyleFunctionFromUrl = layerUrl => {
+export const createStyleFunctionFromUrl = (layerUrl) => {
   return fetch(`${layerUrl}?f=json`)
-    .then(responce => {
+    .then((responce) => {
       return responce.json();
     })
-    .then(esriStyleDefinition => {
+    .then((esriStyleDefinition) => {
       return createStyleFunction(esriStyleDefinition);
     });
 };
@@ -38,7 +38,7 @@ export const createStyleFunctionFromUrl = layerUrl => {
  * @param {Array<import('./types').EsriLabelDefinition>} esriLayerInfoJson.labelingInfo - see https://developers.arcgis.com/documentation/common-data-types/labeling-objects.htm for more info
  * @return {Promise<Function>} function which styles features
  */
-export const createStyleFunction = esriLayerInfoJson => {
+export const createStyleFunction = (esriLayerInfoJson) => {
   return new Promise((yes, no) => {
     let { featureStyles, labelStyles } = readEsriStyleDefinitions(esriLayerInfoJson.drawingInfo);
     for (let i = 0; i < featureStyles.length; i++) {
@@ -59,7 +59,7 @@ export const createStyleFunction = esriLayerInfoJson => {
             const currentValue = feature.get(field);
             switch (operator) {
               case 'in':
-                const valuesIn = value.split(',').map(value => value.toString());
+                const valuesIn = value.split(',').map((value) => value.toString());
                 return valuesIn.indexOf(currentValue.toString()) > -1;
 
               case 'between':
@@ -79,7 +79,7 @@ export const createStyleFunction = esriLayerInfoJson => {
         styles.push(featureStyle.style);
       }
 
-      const labelStyle = labelStyles.find(label => {
+      const labelStyle = labelStyles.find((label) => {
         return label.maxResolution >= resolution && resolution >= label.minResolution;
       });
 
@@ -138,21 +138,21 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
           filters.push({
             field: renderer.field1,
             operator: 'in',
-            value: uniqueField.field1Values
+            value: uniqueField.field1Values,
           });
         }
         if (renderer.field2) {
           filters.push({
             field: renderer.field2,
             operator: 'in',
-            value: uniqueField.field2Values
+            value: uniqueField.field2Values,
           });
         }
         if (renderer.field3) {
           filters.push({
             field: renderer.field3,
             operator: 'in',
-            value: uniqueField.field3Values
+            value: uniqueField.field3Values,
           });
         }
 
@@ -160,7 +160,7 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
         featureStyles.push({
           filters,
           title: uniqueField.title,
-          ...style
+          ...style,
         });
       }
 
@@ -185,14 +185,14 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
             operator: 'between',
             value: {
               lowerBound: classBreakInfo.hasOwnProperty('classMinValue') ? classBreakInfo.classMinValue : classBreakMinValue,
-              upperBound: classBreakInfo.classMaxValue
-            }
-          }
+              upperBound: classBreakInfo.classMaxValue,
+            },
+          },
         ];
 
         featureStyles.push({
           filters,
-          ...style
+          ...style,
         });
       }
 
@@ -212,8 +212,8 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
  * @param {!Array<import('./types').EsriLabelDefinition>} labelingInfo
  * @return {Array<import('./types').LabelType>}
  */
-const readLabels = labelingInfo => {
-  return labelingInfo.map(labelDefinition => {
+export const readLabels = (labelingInfo) => {
+  return labelingInfo.map((labelDefinition) => {
     let labelStyle = readSymbol(labelDefinition.symbol);
     labelStyle.maxScale = labelDefinition.minScale || 1000;
     labelStyle.minScale = labelDefinition.maxScale || 0;
@@ -233,7 +233,7 @@ const readLabels = labelingInfo => {
  * @return {import("./types").StyleType}
  * @see https://developers.arcgis.com/documentation/common-data-types/symbol-objects.htm
  */
-const readSymbol = symbol => {
+export const readSymbol = (symbol) => {
   switch (symbol.type) {
     case 'esriSMS':
       return {
@@ -241,23 +241,23 @@ const readSymbol = symbol => {
           radius: symbol.size / 2,
           fill: symbol.color
             ? {
-                color: `rgba(${symbol.color.join(',')})`
+                color: `rgba(${symbol.color.join(',')})`,
               }
             : null,
           stroke: symbol.outline
             ? {
                 color: `rgba(${symbol.outline.color.join(',')})`,
-                width: symbol.outline.width
+                width: symbol.outline.width,
               }
-            : null
-        }
+            : null,
+        },
       };
     case 'esriSLS':
       return {
         stroke: {
           color: `rgba(${symbol.color.join(',')})`,
-          width: symbol.width
-        }
+          width: symbol.width,
+        },
       };
     case 'esriSFS':
       let style = symbol.outline ? readSymbol(symbol.outline) : {};
@@ -267,8 +267,8 @@ const readSymbol = symbol => {
       return {
         icon: {
           src: `data:image/png;base64,${symbol.imageData}`,
-          rotation: symbol.angle
-        }
+          rotation: symbol.angle,
+        },
       };
     case 'esriTS':
       return {
@@ -284,22 +284,22 @@ const readSymbol = symbol => {
         stroke: symbol.haloColor
           ? {
               color: `rgba(${symbol.haloColor.join(',')}`,
-              width: symbol.haloSize ? symbol.haloSize : null
+              width: symbol.haloSize ? symbol.haloSize : null,
             }
           : null,
         backgroundFill: symbol.backgroundColor
           ? {
-              fill: { color: `rgba(${symbol.backgroundColor.join(',')})` }
+              fill: { color: `rgba(${symbol.backgroundColor.join(',')})` },
             }
           : null,
         backgroundStroke: symbol.borderLineColor
           ? {
               stroke: {
                 color: `rgba(${symbol.borderLineColor.join(',')})`,
-                width: symbol.borderLineSize || null
-              }
+                width: symbol.borderLineSize || null,
+              },
             }
-          : null
+          : null,
       };
     default:
       throw `Symbol type "${symbol.type}" is not implemented yet`;
@@ -314,9 +314,9 @@ const readSymbol = symbol => {
  * @return {Array<Object>}
  * @see https://developers.arcgis.com/documentation/common-data-types/renderer-objects.htm
  */
-const filterUniqueValues = (styles, delimiter) => {
+export const filterUniqueValues = (styles, delimiter) => {
   let uniqueSymbols = new Map();
-  styles.forEach(s => {
+  styles.forEach((s) => {
     if (!uniqueSymbols.has(s.label)) {
       uniqueSymbols.set(s.label, s.symbol);
     }
@@ -325,13 +325,13 @@ const filterUniqueValues = (styles, delimiter) => {
   let result = [];
 
   uniqueSymbols.forEach((symbol, label) => {
-    const uniqueStyles = styles.filter(s => {
+    const uniqueStyles = styles.filter((s) => {
       return s.label === label;
     });
     let field1Values = new Set();
     let field2Values = new Set();
     let field3Values = new Set();
-    uniqueStyles.forEach(s => {
+    uniqueStyles.forEach((s) => {
       field1Values.add(s.value.split(delimiter)[0]);
       field2Values.add(s.value.split(delimiter)[1]);
       field3Values.add(s.value.split(delimiter)[2]);
@@ -342,7 +342,7 @@ const filterUniqueValues = (styles, delimiter) => {
       symbol: symbol,
       field1Values: [...field1Values].join(),
       field2Values: [...field2Values].join(),
-      field3Values: [...field3Values].join()
+      field3Values: [...field3Values].join(),
     });
   });
 
@@ -353,7 +353,7 @@ const filterUniqueValues = (styles, delimiter) => {
  * @param {!Number} scale
  * @return {Number}
  */
-const getMapResolutionFromScale = scale => {
+const getMapResolutionFromScale = (scale) => {
   if (mapProjection) {
     const mpu = METERS_PER_UNIT[mapProjection.getUnits()];
     return scale / (mpu * 39.37 * (25.4 / 0.28));

@@ -1,0 +1,9 @@
+.cache/
+.vscode/
+.parcel-cache/
+dist/
+node_modules/
+npm-debug.log
+npm-debug.log.*
+yarn-error.log
+tests/
