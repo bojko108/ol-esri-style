@@ -8,6 +8,19 @@ import { getFormattedLabel } from './formatters';
  * @type {import('ol/proj/Projection')}
  */
 let mapProjection = null;
+
+/**
+ * // https://developers.arcgis.com/documentation/common-data-types/symbol-objects.htm
+ * // https://developers.arcgis.com/javascript/latest/api-reference/esri-symbols-SimpleLineSymbol.html#style
+ */
+const lineDashPattern = {
+  esriSLSDash: [10], // _ _ _ _
+  esriSLSDashDot: [10, 10, 1, 10], // _ . _ .
+  esriSLSDot: [1, 10, 1, 10], // . . . .
+  esriSLSDashDotDot: [10, 10, 1, 10, 1, 10], // _ . . _ . .
+  esriSLSSolid: [], // _________
+};
+
 /**
  * Set map projection used for labeling features
  * @param {import('ol/proj/Projection')} projection
@@ -21,14 +34,10 @@ export const setMapProjection = (projection) => {
  * @param {!String} layerUrl - ArcGIS REST URL to the layer
  * @return {Promise<Function>} function which styles features
  */
-export const createStyleFunctionFromUrl = (layerUrl) => {
-  return fetch(`${layerUrl}?f=json`)
-    .then((responce) => {
-      return responce.json();
-    })
-    .then((esriStyleDefinition) => {
-      return createStyleFunction(esriStyleDefinition);
-    });
+export const createStyleFunctionFromUrl = async (layerUrl) => {
+  const responce = await fetch(`${layerUrl}?f=json`);
+  const esriStyleDefinition = await responce.json();
+  return await createStyleFunction(esriStyleDefinition);
 };
 
 /**
@@ -257,6 +266,7 @@ export const readSymbol = (symbol) => {
         stroke: {
           color: `rgba(${symbol.color.join(',')})`,
           width: symbol.width,
+          lineDash: lineDashPattern[symbol.style],
         },
       };
     case 'esriSFS':
