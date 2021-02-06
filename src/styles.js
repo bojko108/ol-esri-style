@@ -14,7 +14,7 @@ import { toRadians } from 'ol/math';
  * @param {import('./types').StyleType} [styleData]
  * @return {Style}
  */
-export const createFeatureStyle = styleData => {
+export const createFeatureStyle = (styleData) => {
   if (!styleData.icon) {
     styleData.icon = null;
   }
@@ -55,7 +55,7 @@ export const createFeatureStyle = styleData => {
  * @param {import('./types').LabelType} labelData
  * @return {Text}
  */
-export const createLabelStyle = labelData => {
+export const createLabelStyle = (labelData) => {
   const rotation = toRadians(labelData.rotation || 0);
   const fill = labelData.fill ? new Fill(labelData.fill) : null;
   const stroke = labelData.stroke ? new Stroke(labelData.stroke) : null;

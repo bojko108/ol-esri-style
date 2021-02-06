@@ -98,6 +98,7 @@
  * @property {String} type
  * @property {Array<Number>} [color] - color in RGBA
  * @property {Number} [width]
+ * @property {String} [style] - esriSLSDash | esriSLSDashDot | esriSLSDashDotDot | esriSLSDot | esriSLSNull | esriSLSSolid
  */
 
 /**
