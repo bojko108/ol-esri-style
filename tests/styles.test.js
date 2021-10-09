@@ -1,6 +1,6 @@
 import { assert } from 'chai';
-import { createFeatureStyle, createLabelStyle } from '../src/styles';
-import { readEsriStyleDefinitions } from '../src';
+import { createFeatureStyle, createLabelStyle } from '../src/styles.js';
+import { readEsriStyleDefinitions } from '../src/index.js';
 
 describe('[src/styles.js tests]', () => {
   const drawingInfo = {
@@ -140,11 +140,13 @@ describe('[src/styles.js tests]', () => {
     assert.isArray(styleDefinition.featureStyles);
     // +1 because the default style is also added to the array of styles:
     assert.equal(styleDefinition.featureStyles.length, drawingInfo.renderer.uniqueValueInfos.length + 1);
+    assert.isArray(styleDefinition.labelStyles);
+    assert.equal(styleDefinition.labelStyles.length, 1);
   });
 
   it('should create feature style', () => {
     const style = createFeatureStyle(styleDefinition.featureStyles[1]);
-    console.log(style);
+    const labelStyle = createLabelStyle(styleDefinition.labelStyles[0]);
 
     assert.isDefined(style);
     assert.isNull(style.getFill());
@@ -155,5 +157,7 @@ describe('[src/styles.js tests]', () => {
     assert.isArray(style.getStroke().getLineDash());
     assert.equal(style.getStroke().getLineDash()[0], 10);
     assert.equal(style.getStroke().getWidth(), drawingInfo.renderer.uniqueValueInfos[1].symbol.width);
+
+    assert.isDefined(labelStyle);
   });
 });

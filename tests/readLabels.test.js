@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { readLabels } from '../src/index';
+import { readLabels } from '../src/index.js';
 
 describe('[readLabels() tests]', () => {
   it('should read label definitions', () => {
@@ -7,7 +7,7 @@ describe('[readLabels() tests]', () => {
       {
         labelPlacement: 'esriServerPolygonPlacementAlwaysHorizontal',
         where: null,
-        labelExpression: '[OBEJCTID] CONCAT  NEWLINE  CONCAT [C_NAZEV_OBLOBLAST]',
+        labelExpression: '[OBJECTID] CONCAT  NEWLINE  CONCAT [C_NAZEV_OBLOBLAST]',
         useCodedValues: true,
         symbol: {
           type: 'esriTS',
@@ -47,6 +47,6 @@ describe('[readLabels() tests]', () => {
     assert.isDefined(label);
     assert.equal(label.maxScale, 1000);
     assert.equal(label.minScale, 0);
-    assert.equal(label.text, '{OBEJCTID}\n{C_NAZEV_OBLOBLAST}');
+    assert.equal(label.text, '{OBJECTID}\n{C_NAZEV_OBLOBLAST}');
   });
 });

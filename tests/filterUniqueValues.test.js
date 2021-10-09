@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { filterUniqueValues } from '../src/index';
+import { filterUniqueValues } from '../src/index.js';
 
 describe('[filterUniqueValues() tests]', () => {
   it('should read unique values in renderer', () => {

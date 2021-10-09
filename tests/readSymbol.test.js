@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { readSymbol } from '../src/index';
+import { readSymbol } from '../src/index.js';
 
 describe('[readSymbol() tests]', () => {
   it('should throw exception if symbol type is not defined', () => {

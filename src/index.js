@@ -1,7 +1,7 @@
-import { METERS_PER_UNIT } from 'ol/proj/Units';
-import Style from 'ol/style/Style';
-import { createFeatureStyle, createLabelStyle } from './styles';
-import { getFormattedLabel } from './formatters';
+import { METERS_PER_UNIT } from 'ol/proj/Units.js';
+import Style from 'ol/style/Style.js';
+import { createFeatureStyle, createLabelStyle } from './styles.js';
+import { getFormattedLabel } from './formatters.js';
 
 /**
  * Map projection - used for labeling features

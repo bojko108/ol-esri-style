@@ -1,6 +1,6 @@
 import { assert } from 'chai';
-import { formatObject, getFormattedLabel } from '../src/formatters';
-import Feature from 'ol/Feature';
+import { formatObject, getFormattedLabel } from '../src/formatters.js';
+import Feature from 'ol/Feature.js';
 
 describe('[src/formatters.js tests]', () => {
   const feature = new Feature({ name: 'Thiery Henry' });
