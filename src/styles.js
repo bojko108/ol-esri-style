@@ -1,10 +1,10 @@
-import Style from 'ol/style/Style';
-import Stroke from 'ol/style/Stroke';
-import Fill from 'ol/style/Fill';
-import Circle from 'ol/style/Circle';
-import Icon from 'ol/style/Icon';
-import Text from 'ol/style/Text';
-import { toRadians } from 'ol/math';
+import Style from 'ol/style/Style.js';
+import Stroke from 'ol/style/Stroke.js';
+import Fill from 'ol/style/Fill.js';
+import Circle from 'ol/style/Circle.js';
+import Icon from 'ol/style/Icon.js';
+import Text from 'ol/style/Text.js';
+import { toRadians } from 'ol/math.js';
 // import { formatAttributes, formatObject } from '../helpers';
 // import { defaultFeatureStyle, defaultLabelStyle } from './defaultStyle';
 

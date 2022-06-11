@@ -1,7 +1,7 @@
-import { METERS_PER_UNIT } from 'ol/proj/Units';
-import Style from 'ol/style/Style';
-import { createFeatureStyle, createLabelStyle } from './styles';
-import { getFormattedLabel } from './formatters';
+import { METERS_PER_UNIT } from 'ol/proj/Units.js';
+import Style from 'ol/style/Style.js';
+import { createFeatureStyle, createLabelStyle } from './styles.js';
+import { getFormattedLabel } from './formatters.js';
 
 /**
  * Map projection - used for labeling features
@@ -54,7 +54,7 @@ export const createStyleFunction = (esriLayerInfoJson) => {
       featureStyles[i].style = createFeatureStyle(featureStyles[i]);
     }
     for (let i = 0; i < labelStyles.length; i++) {
-      labelStyles[i].maxResolution = getMapResolutionFromScale(labelStyles[i].maxScale || 1000);
+      labelStyles[i].maxResolution = getMapResolutionFromScale(labelStyles[i].maxScale || Infinity);
       labelStyles[i].minResolution = getMapResolutionFromScale(labelStyles[i].minScale || 1);
       labelStyles[i].label = labelStyles[i].text;
       labelStyles[i].style = new Style({ text: createLabelStyle(labelStyles[i]) });
@@ -221,7 +221,7 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
  * @param {!Array<import('./types').EsriLabelDefinition>} labelingInfo
  * @return {Array<import('./types').LabelType>}
  */
-const readLabels = (labelingInfo) => {
+export const readLabels = (labelingInfo) => {
   return labelingInfo.map((labelDefinition) => {
     let labelStyle = readSymbol(labelDefinition.symbol);
     labelStyle.maxScale = labelDefinition.minScale || 1000;
@@ -242,7 +242,7 @@ const readLabels = (labelingInfo) => {
  * @return {import("./types").StyleType}
  * @see https://developers.arcgis.com/documentation/common-data-types/symbol-objects.htm
  */
-const readSymbol = (symbol) => {
+export const readSymbol = (symbol) => {
   switch (symbol.type) {
     case 'esriSMS':
       return {
@@ -324,7 +324,7 @@ const readSymbol = (symbol) => {
  * @return {Array<Object>}
  * @see https://developers.arcgis.com/documentation/common-data-types/renderer-objects.htm
  */
-const filterUniqueValues = (styles, delimiter) => {
+export const filterUniqueValues = (styles, delimiter) => {
   let uniqueSymbols = new Map();
   styles.forEach((s) => {
     if (!uniqueSymbols.has(s.label)) {
@@ -364,8 +364,6 @@ const filterUniqueValues = (styles, delimiter) => {
  * @return {Number}
  */
 const getMapResolutionFromScale = (scale) => {
-  if (mapProjection) {
-    const mpu = METERS_PER_UNIT[mapProjection.getUnits()];
-    return scale / (mpu * 39.37 * (25.4 / 0.28));
-  }
+  const mpu = mapProjection ? METERS_PER_UNIT[mapProjection.getUnits()] : 1;
+  return scale / (mpu * 39.37 * (25.4 / 0.28));
 };
