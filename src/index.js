@@ -54,7 +54,7 @@ export const createStyleFunction = (esriLayerInfoJson) => {
       featureStyles[i].style = createFeatureStyle(featureStyles[i]);
     }
     for (let i = 0; i < labelStyles.length; i++) {
-      labelStyles[i].maxResolution = getMapResolutionFromScale(labelStyles[i].maxScale || 1000);
+      labelStyles[i].maxResolution = getMapResolutionFromScale(labelStyles[i].maxScale || Infinity);
       labelStyles[i].minResolution = getMapResolutionFromScale(labelStyles[i].minScale || 1);
       labelStyles[i].label = labelStyles[i].text;
       labelStyles[i].style = new Style({ text: createLabelStyle(labelStyles[i]) });
@@ -364,8 +364,6 @@ export const filterUniqueValues = (styles, delimiter) => {
  * @return {Number}
  */
 const getMapResolutionFromScale = (scale) => {
-  if (mapProjection) {
-    const mpu = METERS_PER_UNIT[mapProjection.getUnits()];
-    return scale / (mpu * 39.37 * (25.4 / 0.28));
-  }
+  const mpu = mapProjection ? METERS_PER_UNIT[mapProjection.getUnits()] : 1;
+  return scale / (mpu * 39.37 * (25.4 / 0.28));
 };
