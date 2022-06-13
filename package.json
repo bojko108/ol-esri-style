@@ -3,8 +3,11 @@
   "version": "2.0.10",
   "description": "Convert ESRI styles to OpenLayers styles",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
-    "test": "parcel example/index.html",
+    "dev": "parcel example/index.html",
+    "test": "mocha ./tests/**/*.test.js",
+    "test-watch": "mocha --watch --require @babel/polyfill --require @babel/register ./tests/**/*.test.js -r esm",
     "patch": "npm version patch --no-git-tag-version",
     "minor": "npm version minor --no-git-tag-version",
     "major": "npm version major --no-git-tag-version"
@@ -25,9 +28,14 @@
   },
   "homepage": "https://github.com/bojko108/ol-esri-style#readme",
   "dependencies": {
-    "ol": "^6.4.3"
+    "ol": "^6.14.1"
   },
   "devDependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "@babel/register": "^7.12.13",
+    "chai": "^4.3.0",
+    "esm": "^3.2.25",
+    "mocha": "^8.2.1",
     "parcel": "^2.0.0-beta.1"
   }
 }

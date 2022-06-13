@@ -1,18 +1,43 @@
 <html>
-  <body>
+
+<body>
     <style>
-      .map {
-        height: 80%;
-        width: 80%;
-        margin: auto;
-        background: #fff
-          url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAnRSTlMAAHaTzTgAAAARSURBVHgBY3iKBFEAOp/+MgB+UQnYeBZPWAAAAABJRU5ErkJggg==) !important;
-      }
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+        
+        .map {
+            height: 100%;
+            width: 100%;
+            background: #fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAnRSTlMAAHaTzTgAAAARSURBVHgBY3iKBFEAOp/+MgB+UQnYeBZPWAAAAABJRU5ErkJggg==) !important;
+        }
+        
+        .legend {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+            z-index: 9999;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            background-color: #ffffff85;
+        }
+        
+        ul {
+            padding-inline-start: 0px;
+        }
     </style>
-    <script src="index.js"></script>
-    <span>Feature info: </span>
-    <div id="info">&nbsp;</div>
-    <!-- <input type="checkbox" id="showLabels" checked /> show labels<br /> -->
-    <div id="map" class="map"></div>
-  </body>
+    <script type="module" src="index.js"></script>
+    <div id="legend" class="legend">
+        Layers
+        <ul id="legend-items"></ul>
+    </div>
+    <div id="map" class="map" />
+</body>
+
 </html>
