@@ -25,6 +25,20 @@ createStyleFunctionFromUrl('arcgis_server_layer_url').then(styleFunction => {
 });
 ```
 
+You can modify the styles before applying them to the features:
+```javascript
+// set layer style
+createStyleFunctionFromUrl('arcgis_server_layer_url').then(styleFunction => {
+  vector.setStyle((feature, resolution) => {
+    const styles = styleFunction(feature, resolution);
+
+    // modify styles
+    
+    return styles;
+  });
+});
+```
+
 ## Example
 
 To check the example stored in `/example` directory run:
