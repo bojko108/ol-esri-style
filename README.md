@@ -9,18 +9,18 @@ This module can convert ESRI style definition to OpenLayers style function. ESRI
 Import as ES6 module:
 
 ```javascript
-import { createStyleFunctionFromUrl, setMapProjection } from 'ol-esri-style';
+import { createStyleFunctionFromUrl } from 'ol-esri-style';
 
 // create a new vector layer
 const vector = new VectorLayer({
   ...
 });
 
-// This is need for labeling features. Visible resolutions for the labels are calculated using map projection units.
-setMapProjection(map.getView().getProjection());
 
 // set layer style
-createStyleFunctionFromUrl('arcgis_server_layer_url').then(styleFunction => {
+// Passing the projection is need for labeling features. Visible resolutions for
+// the labels are calculated using map projection units.
+createStyleFunctionFromUrl('arcgis_server_layer_url', map.getView().getProjection()).then(styleFunction => {
   vector.setStyle(styleFunction);
 });
 ```
@@ -33,7 +33,7 @@ createStyleFunctionFromUrl('arcgis_server_layer_url').then(styleFunction => {
     const styles = styleFunction(feature, resolution);
 
     // modify styles
-    
+
     return styles;
   });
 });

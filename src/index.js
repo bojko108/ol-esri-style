@@ -4,12 +4,6 @@ import { createFeatureStyle, createLabelStyle } from './styles.js';
 import { getFormattedLabel } from './formatters.js';
 
 /**
- * Map projection - used for labeling features
- * @type {import('ol/proj/Projection')}
- */
-let mapProjection = null;
-
-/**
  * // https://developers.arcgis.com/documentation/common-data-types/symbol-objects.htm
  * // https://developers.arcgis.com/javascript/latest/api-reference/esri-symbols-SimpleLineSymbol.html#style
  */
@@ -22,22 +16,14 @@ const lineDashPattern = {
 };
 
 /**
- * Set map projection used for labeling features
- * @param {import('ol/proj/Projection')} projection
- */
-export const setMapProjection = (projection) => {
-    mapProjection = projection;
-};
-
-/**
  * Creates OpenLayers style function based on ESRI drawing info
  * @param {!String} layerUrl - ArcGIS REST URL to the layer
  * @return {Promise<Function>} function which styles features
  */
-export const createStyleFunctionFromUrl = async(layerUrl) => {
+export const createStyleFunctionFromUrl = async(layerUrl, mapProjection) => {
     const responce = await fetch(`${layerUrl}?f=json`);
     const esriStyleDefinition = await responce.json();
-    return await createStyleFunction(esriStyleDefinition);
+    return await createStyleFunction(esriStyleDefinition, mapProjection);
 };
 
 /**
@@ -47,14 +33,14 @@ export const createStyleFunctionFromUrl = async(layerUrl) => {
  * @param {Array<import('./types').EsriLabelDefinition>} esriLayerInfoJson.labelingInfo - see https://developers.arcgis.com/documentation/common-data-types/labeling-objects.htm for more info
  * @return {Promise<Function>} function which styles features
  */
-export const createStyleFunction = async(esriLayerInfoJson) => {
+export const createStyleFunction = async(esriLayerInfoJson, mapProjection) => {
     let { featureStyles, labelStyles } = readEsriStyleDefinitions(esriLayerInfoJson.drawingInfo);
     for (let i = 0; i < featureStyles.length; i++) {
         featureStyles[i].style = await createFeatureStyle(featureStyles[i]);
     }
     for (let i = 0; i < labelStyles.length; i++) {
-        labelStyles[i].maxResolution = getMapResolutionFromScale(labelStyles[i].maxScale || Infinity);
-        labelStyles[i].minResolution = getMapResolutionFromScale(labelStyles[i].minScale || 1);
+        labelStyles[i].maxResolution = getMapResolutionFromScale(labelStyles[i].maxScale || Infinity, mapProjection);
+        labelStyles[i].minResolution = getMapResolutionFromScale(labelStyles[i].minScale || 1, mapProjection);
         labelStyles[i].label = labelStyles[i].text;
         labelStyles[i].style = new Style({ text: createLabelStyle(labelStyles[i]) });
     }
@@ -358,9 +344,10 @@ export const filterUniqueValues = (styles, delimiter) => {
 
 /**
  * @param {!Number} scale
+ * @param {import('ol/proj/Projection')} projection
  * @return {Number}
  */
-const getMapResolutionFromScale = (scale) => {
+const getMapResolutionFromScale = (scale, mapProjection) => {
     const mpu = mapProjection ? METERS_PER_UNIT[mapProjection.getUnits()] : 1;
     return scale / (mpu * 39.37 * (25.4 / 0.28));
 };
