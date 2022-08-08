@@ -18,7 +18,8 @@ const lineDashPattern = {
 /**
  * Creates OpenLayers style function based on ESRI drawing info
  * @param {!String} layerUrl - ArcGIS REST URL to the layer
- * @return {Promise<Function>} function which styles features
+ * @param {import('ol/proj/Projection')} [projection] - visibility of the labels are calculated using this projection units
+ * @return {Promise<Function>} function used to style features
  */
 export const createStyleFunctionFromUrl = async(layerUrl, mapProjection) => {
     const responce = await fetch(`${layerUrl}?f=json`);
@@ -31,7 +32,8 @@ export const createStyleFunctionFromUrl = async(layerUrl, mapProjection) => {
  * @param {!Object} esriLayerInfoJson
  * @param {import('./types').EsriRenderer} esriLayerInfoJson.renderer - see https://developers.arcgis.com/documentation/common-data-types/renderer-objects.htm for more info
  * @param {Array<import('./types').EsriLabelDefinition>} esriLayerInfoJson.labelingInfo - see https://developers.arcgis.com/documentation/common-data-types/labeling-objects.htm for more info
- * @return {Promise<Function>} function which styles features
+ * @param {import('ol/proj/Projection')} [projection] - visibility of the labels are calculated using this projection units
+ * @return {Promise<Function>} function used to style features
  */
 export const createStyleFunction = async(esriLayerInfoJson, mapProjection) => {
     let { featureStyles, labelStyles } = readEsriStyleDefinitions(esriLayerInfoJson.drawingInfo);
