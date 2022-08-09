@@ -345,11 +345,25 @@ export const filterUniqueValues = (styles, delimiter) => {
 };
 
 /**
+ * Map projection - used for labeling features
+ * @type {import('ol/proj/Projection')}
+ */
+ let globalMapProjection = null;
+ /**
+ * Set map projection used for labeling features
+ * @param {import('ol/proj/Projection')} projection
+ */
+export const setMapProjection = (projection) => {
+    globalMapProjection = projection;
+};
+
+/**
  * @param {!Number} scale
  * @param {import('ol/proj/Projection')} projection
  * @return {Number}
  */
 const getMapResolutionFromScale = (scale, mapProjection) => {
-    const mpu = mapProjection ? METERS_PER_UNIT[mapProjection.getUnits()] : 1;
+    const projection = globalMapProjection || mapProjection;
+    const mpu = projection ? METERS_PER_UNIT[projection.getUnits()] : 1;
     return scale / (mpu * 39.37 * (25.4 / 0.28));
 };
