@@ -22,8 +22,8 @@ const lineDashPattern = {
  * @return {Promise<Function>} function used to style features
  */
 export const createStyleFunctionFromUrl = async(layerUrl, mapProjection) => {
-    const responce = await fetch(`${layerUrl}?f=json`);
-    const esriStyleDefinition = await responce.json();
+    const response = await fetch(`${layerUrl}?f=json`);
+    const esriStyleDefinition = await response.json();
     return await createStyleFunction(esriStyleDefinition, mapProjection);
 };
 
