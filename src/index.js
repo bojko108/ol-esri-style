@@ -52,7 +52,10 @@ export const createStyleFunction = async(esriLayerInfoJson, mapProjection) => {
         const featureStyle = featureStyles.find(({ filters }) => {
             if (filters) {
                 return filters.every(({ field, value, operator }) => {
-                    const currentValue = feature.get(field) || '';
+                    let currentValue = feature.get(field);
+                    if (currentValue === undefined || currentValue === null)
+                        currentValue = '';
+                    
                     switch (operator) {
                         case 'in':
                             const valuesIn = value.split(',').map((value) => value.toString());
