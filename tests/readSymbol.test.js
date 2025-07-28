@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { readSymbol } from '../src/index.js';
+import { esriColorToOLColor, readSymbol } from '../src/index.js';
 
 describe('[readSymbol() tests]', () => {
     it('should throw exception if symbol type is not defined', () => {
@@ -21,7 +21,7 @@ describe('[readSymbol() tests]', () => {
 
         assert.isDefined(symbol);
         assert.isDefined(symbol.stroke);
-        assert.equal(symbol.stroke.color, `rgba(${symbolDefinition.color.join(',')})`);
+        assert.equal(symbol.stroke.color, `rgba(${esriColorToOLColor(symbolDefinition.color).join(',')})`);
         assert.equal(symbol.stroke.width, symbolDefinition.width);
         assert.isArray(symbol.stroke.lineDash);
         assert.isEmpty(symbol.stroke.lineDash);
@@ -39,7 +39,7 @@ describe('[readSymbol() tests]', () => {
 
         assert.isDefined(symbol);
         assert.isDefined(symbol.stroke);
-        assert.equal(symbol.stroke.color, `rgba(${symbolDefinition.color.join(',')})`);
+        assert.equal(symbol.stroke.color, `rgba(${esriColorToOLColor(symbolDefinition.color).join(',')})`);
         assert.equal(symbol.stroke.width, symbolDefinition.width);
         assert.isArray(symbol.stroke.lineDash);
         assert.equal(symbol.stroke.lineDash.length, 1);
@@ -57,7 +57,7 @@ describe('[readSymbol() tests]', () => {
 
         assert.isDefined(symbol);
         assert.isDefined(symbol.fill);
-        assert.equal(symbol.fill.color, `rgba(${symbolDefinition.color.join(',')})`);
+        assert.equal(symbol.fill.color, `rgba(${esriColorToOLColor(symbolDefinition.color).join(',')})`);
     });
 
     it('should read esriSFS symbol with stroke', () => {
@@ -77,7 +77,7 @@ describe('[readSymbol() tests]', () => {
 
         assert.isDefined(symbol);
         assert.isDefined(symbol.fill);
-        assert.equal(symbol.fill.color, `rgba(${symbolDefinition.color.join(',')})`);
+        assert.equal(symbol.fill.color, `rgba(${esriColorToOLColor(symbolDefinition.color).join(',')})`);
         assert.isDefined(symbol.stroke);
         assert.equal(symbol.stroke.width, symbolDefinition.outline.width);
         assert.isArray(symbol.stroke.lineDash);
@@ -148,7 +148,7 @@ describe('[readSymbol() tests]', () => {
         assert.equal(symbol.textBaseline, symbolDefinition.verticalAlignment);
         assert.equal(symbol.angle, symbolDefinition.angle);
         assert.isDefined(symbol.fill);
-        assert.equal(symbol.fill.color, `rgba(${symbolDefinition.color.join(',')})`);
+        assert.equal(symbol.fill.color, `rgba(${esriColorToOLColor(symbolDefinition.color).join(',')})`);
         assert.isNull(symbol.stroke);
         assert.isNull(symbol.backgroundFill);
         assert.isNull(symbol.backgroundStroke);

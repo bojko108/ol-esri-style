@@ -16,12 +16,26 @@ const lineDashPattern = {
 };
 
 /**
+ * Converts ESRI color to OpenLayers color format with normalized alpha
+ * @param {!Array<Number>} esriColor - ESRI color in [R, G, B, A] format
+ * @return {Array<Number>} OpenLayers color in [R, G, B, A] format with alpha normalized to [0, 1]
+ */
+export const esriColorToOLColor = (esriColor) => {
+    const [r, g, b, a = 255] = esriColor;
+
+    // Clamp alpha to [0, 255] and normalize to [0, 1]
+    const alpha = Math.max(0, Math.min(255, a)) / 255;
+
+    return [r, g, b, alpha];
+};
+
+/**
  * Creates OpenLayers style function based on ESRI drawing info
  * @param {!String} layerUrl - ArcGIS REST URL to the layer
  * @param {import('ol/proj/Projection')} [projection] - visibility of the labels are calculated using this projection units
  * @return {Promise<Function>} function used to style features
  */
-export const createStyleFunctionFromUrl = async(layerUrl, mapProjection) => {
+export const createStyleFunctionFromUrl = async (layerUrl, mapProjection) => {
     const response = await fetch(`${layerUrl}?f=json`);
     const esriStyleDefinition = await response.json();
     return await createStyleFunction(esriStyleDefinition, mapProjection);
@@ -35,7 +49,7 @@ export const createStyleFunctionFromUrl = async(layerUrl, mapProjection) => {
  * @param {import('ol/proj/Projection')} [projection] - visibility of the labels are calculated using this projection units
  * @return {Promise<Function>} function used to style features
  */
-export const createStyleFunction = async(esriLayerInfoJson, mapProjection) => {
+export const createStyleFunction = async (esriLayerInfoJson, mapProjection) => {
     let { featureStyles, labelStyles } = readEsriStyleDefinitions(esriLayerInfoJson.drawingInfo);
     for (let i = 0; i < featureStyles.length; i++) {
         featureStyles[i].style = await createFeatureStyle(featureStyles[i]);
@@ -55,7 +69,7 @@ export const createStyleFunction = async(esriLayerInfoJson, mapProjection) => {
                     let currentValue = feature.get(field);
                     if (currentValue === undefined || currentValue === null)
                         currentValue = '';
-                    
+
                     switch (operator) {
                         case 'in':
                             const valuesIn = value.split(',').map((value) => value.toString());
@@ -184,7 +198,7 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
                         lowerBound: classBreakInfo.hasOwnProperty('classMinValue') ? classBreakInfo.classMinValue : classBreakMinValue,
                         upperBound: classBreakInfo.classMaxValue,
                     },
-                }, ];
+                },];
 
                 featureStyles.push({
                     filters,
@@ -237,12 +251,12 @@ export const readSymbol = (symbol) => {
                     radius: symbol.size / 2,
                     fill: symbol.color ?
                         {
-                            color: `rgba(${symbol.color.join(',')})`,
+                            color: `rgba(${esriColorToOLColor(symbol.color).join(',')})`,
                         } :
                         null,
                     stroke: symbol.outline ?
                         {
-                            color: `rgba(${symbol.outline.color.join(',')})`,
+                            color: `rgba(${esriColorToOLColor(symbol.outline.color).join(',')})`,
                             width: symbol.outline.width,
                         } :
                         null,
@@ -251,14 +265,14 @@ export const readSymbol = (symbol) => {
         case 'esriSLS':
             return {
                 stroke: {
-                    color: `rgba(${symbol.color.join(',')})`,
+                    color: `rgba(${esriColorToOLColor(symbol.color).join(',')})`,
                     width: symbol.width,
                     lineDash: lineDashPattern[symbol.style],
                 },
             };
         case 'esriSFS':
             let style = symbol.outline ? readSymbol(symbol.outline) : {};
-            style.fill = { color: `rgba(${symbol.color.join(',')})` };
+            style.fill = { color: `rgba(${esriColorToOLColor(symbol.color).join(',')})` };
             return style;
         case 'esriPMS':
             return {
@@ -278,10 +292,10 @@ export const readSymbol = (symbol) => {
                 textBaseline: symbol.verticalAlignment,
                 padding: [5, 5, 5, 5],
                 angle: symbol.angle,
-                fill: symbol.color ? { color: `rgba(${symbol.color.join(',')})` } : null,
+                fill: symbol.color ? { color: `rgba(${esriColorToOLColor(symbol.color).join(',')})` } : null,
                 stroke: symbol.haloColor ?
                     {
-                        color: `rgba(${symbol.haloColor.join(',')}`,
+                        color: `rgba(${esriColorToOLColor(symbol.haloColor).join(',')})`,
                         width: symbol.haloSize ? symbol.haloSize : null,
                     } :
                     null,
