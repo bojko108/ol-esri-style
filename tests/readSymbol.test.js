@@ -2,14 +2,13 @@ import { assert } from 'chai';
 import { esriColorToOLColor, readSymbol } from '../src/index.js';
 
 describe('[readSymbol() tests]', () => {
+
     it('should throw exception if symbol type is not defined', () => {
-        const symbolDefinition = {};
-        assert.throw(() => {
-            readSymbol(symbolDefinition);
-        }, `Symbol type "${symbolDefinition.type}" is not implemented yet`);
+			const symbolDefinition = {};
+			return assert.isRejected(readSymbol(symbolDefinition), `Symbol type "${symbolDefinition.type}" is not implemented yet`);
     });
 
-    it('should read esriSLS symbol', () => {
+    it('should read esriSLS symbol', async() => {
         const symbolDefinition = {
             type: 'esriSLS',
             style: 'esriSLSSolid',
@@ -17,7 +16,7 @@ describe('[readSymbol() tests]', () => {
             width: 1.5,
         };
 
-        const symbol = readSymbol(symbolDefinition);
+        const symbol = await readSymbol(symbolDefinition);
 
         assert.isDefined(symbol);
         assert.isDefined(symbol.stroke);
@@ -27,7 +26,7 @@ describe('[readSymbol() tests]', () => {
         assert.isEmpty(symbol.stroke.lineDash);
     });
 
-    it('should read esriSLS symbol with dashes', () => {
+    it('should read esriSLS symbol with dashes', async() => {
         const symbolDefinition = {
             type: 'esriSLS',
             style: 'esriSLSDash',
@@ -35,7 +34,7 @@ describe('[readSymbol() tests]', () => {
             width: 1.5,
         };
 
-        const symbol = readSymbol(symbolDefinition);
+        const symbol = await readSymbol(symbolDefinition);
 
         assert.isDefined(symbol);
         assert.isDefined(symbol.stroke);
@@ -46,21 +45,21 @@ describe('[readSymbol() tests]', () => {
         assert.equal(symbol.stroke.lineDash[0], 10);
     });
 
-    it('should read esriSFS symbol without stroke', () => {
+    it('should read esriSFS symbol without stroke', async() => {
         const symbolDefinition = {
             type: 'esriSFS',
             style: 'esriSFSBackwardDiagonal',
             color: [210, 210, 210, 140],
         };
 
-        const symbol = readSymbol(symbolDefinition);
+        const symbol = await readSymbol(symbolDefinition);
 
         assert.isDefined(symbol);
         assert.isDefined(symbol.fill);
         assert.equal(symbol.fill.color, `rgba(${esriColorToOLColor(symbolDefinition.color).join(',')})`);
     });
 
-    it('should read esriSFS symbol with stroke', () => {
+    it('should read esriSFS symbol with stroke', async() => {
         const symbolDefinition = {
             type: 'esriSFS',
             style: 'esriSFSBackwardDiagonal',
@@ -73,7 +72,7 @@ describe('[readSymbol() tests]', () => {
             },
         };
 
-        const symbol = readSymbol(symbolDefinition);
+        const symbol = await readSymbol(symbolDefinition);
 
         assert.isDefined(symbol);
         assert.isDefined(symbol.fill);
@@ -84,7 +83,7 @@ describe('[readSymbol() tests]', () => {
         assert.isEmpty(symbol.stroke.lineDash);
     });
 
-    it('should read esriPMS symbol', () => {
+    it('should read esriPMS symbol', async() => {
         const symbolDefinition = {
             type: 'esriPMS',
             url: '024cfa33758923dfffcaf6d103637d4c',
@@ -97,7 +96,7 @@ describe('[readSymbol() tests]', () => {
             yoffset: 0,
         };
 
-        const symbol = readSymbol(symbolDefinition);
+        const symbol = await readSymbol(symbolDefinition);
 
         assert.isDefined(symbol);
         assert.isDefined(symbol.icon);
@@ -109,7 +108,7 @@ describe('[readSymbol() tests]', () => {
         assert.equal(symbol.icon.size[1], symbolDefinition.height * 1.333);
     });
 
-    it('should read esriTS symbol', () => {
+    it('should read esriTS symbol', async() => {
         const symbolDefinition = {
             type: 'esriTS',
             color: [102, 119, 205, 255],
@@ -134,7 +133,7 @@ describe('[readSymbol() tests]', () => {
             },
         };
 
-        const symbol = readSymbol(symbolDefinition);
+        const symbol = await readSymbol(symbolDefinition);
 
         assert.isDefined(symbol);
         assert.isUndefined(symbol.text);

@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "parcel example/index.html",
-    "test": "mocha ./tests/**/*.test.js",
+    "test": "mocha --require ./tests/setupTests.js ./tests/**/*.test.js",
     "test-watch": "mocha --watch --require @babel/polyfill --require @babel/register ./tests/**/*.test.js -r esm",
     "patch": "npm version patch --no-git-tag-version",
     "minor": "npm version minor --no-git-tag-version",
@@ -34,6 +34,7 @@
     "@babel/polyfill": "^7.12.1",
     "@babel/register": "^7.12.13",
     "chai": "^4.3.0",
+    "chai-as-promised": "^8.0.1",
     "esm": "^3.2.25",
     "mocha": "^8.2.1",
     "parcel": "^2.0.0-beta.1"
