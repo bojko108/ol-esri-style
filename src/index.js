@@ -119,7 +119,7 @@ export const createStyleFunction = async (esriLayerInfoJson, mapProjection) => {
  * @property {Array<import('./types').StyleType>} [styles.featureStyles]
  * @property {Array<import('./types').LabelType>} [styles.labelStyles]
  */
-export const readEsriStyleDefinitions = async({ renderer, labelingInfo }) => {
+export const readEsriStyleDefinitions = async ({ renderer, labelingInfo, transparency }) => {
     if (!renderer) throw 'renderer is not defined';
 
     /**
@@ -133,7 +133,7 @@ export const readEsriStyleDefinitions = async({ renderer, labelingInfo }) => {
 
     switch (renderer.type) {
         case 'simple':
-            featureStyles.push(await readSymbol(renderer.symbol));
+            featureStyles.push(await readSymbol({ ...renderer.symbol, transparency }));
             break;
         case 'uniqueValue':
             const uniqueFieldValues = filterUniqueValues(renderer.uniqueValueInfos, renderer.fieldDelimiter);
@@ -313,6 +313,39 @@ export const readSymbol = async(symbol) => {
                     } :
                     null,
             };
+        case "esriPFS":
+            if (!symbol.imageData) {
+            console.error("esriPFS symbol is missing imageData");
+            }
+            const canvasElement = document.createElement("canvas");
+            const canvasElementContext = canvasElement.getContext("2d");
+
+            const image = new Image();
+            image.src =
+            `data:${symbol.contentType ?? 'image/png'};base64,${symbol.imageData}`;
+            const stroke = symbol.outline ? (await readSymbol(symbol.outline)).stroke : {};// var ourline
+
+            return new Promise((resolve, reject) => {
+            image.onload = () => {
+                if (!canvasElementContext) {
+                reject(new Error("Failed to load image for esriPFS symbol pattern. No canvas context."));
+                return;
+                }
+                canvasElement.width = image.width;
+                canvasElement.height = image.height;
+                canvasElementContext.globalAlpha = symbol.transparency ? 1 - symbol.transparency / 100 : 1;
+                canvasElementContext.drawImage(image, 0, 0);
+                const pattern = canvasElementContext.createPattern(canvasElement, "repeat");
+
+                resolve({
+                stroke,
+                fill: {
+                    color: pattern,
+                }
+                });
+            };
+            image.onerror = () => reject(new Error("Failed to load image for esriPFS symbol pattern."));
+            });
         default:
             throw `Symbol type "${symbol.type}" is not implemented yet`;
     }

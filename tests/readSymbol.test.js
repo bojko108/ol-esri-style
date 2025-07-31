@@ -2,10 +2,34 @@ import { assert } from 'chai';
 import { esriColorToOLColor, readSymbol } from '../src/index.js';
 
 describe('[readSymbol() tests]', () => {
+  beforeEach(function mockImageAndCanvas() {
+    global.Image = function () {
+      const image = document.createElement('image');
+      setTimeout(() => {
+        if (typeof image.onload === 'function') {
+          image.onload();
+        }
+      }, 0); // this set timeout is necessary to simulate async loading of the image for esriPFS
+      return image;
+    };
 
+    document.createElement = function (tagName) {
+      if (tagName === 'canvas') {
+        const canvas = {}
+        canvas.getContext = () => ({
+          drawImage: function () { },
+          createPattern: function () {
+            return [];
+          }
+        });
+        return canvas;
+      }
+      return {}
+    };
+  });
     it('should throw exception if symbol type is not defined', () => {
-			const symbolDefinition = {};
-			return assert.isRejected(readSymbol(symbolDefinition), `Symbol type "${symbolDefinition.type}" is not implemented yet`);
+      const symbolDefinition = {};
+      return assert.isRejected(readSymbol(symbolDefinition), `Symbol type "${symbolDefinition.type}" is not implemented yet`);
     });
 
     it('should read esriSLS symbol', async() => {
@@ -151,5 +175,41 @@ describe('[readSymbol() tests]', () => {
         assert.isNull(symbol.stroke);
         assert.isNull(symbol.backgroundFill);
         assert.isNull(symbol.backgroundStroke);
+    });
+    it('should read esriPFS symbol without stroke', async () => {
+      const symbolDefinition = {
+        imageData: 'fakeBase64ImageData',
+        type: 'esriPFS',
+        contentType: 'image/png',
+      }
+
+      const symbol = await readSymbol(symbolDefinition);
+
+      assert.isDefined(symbol);
+      assert.isDefined(symbol.fill);
+    });
+
+    it('should read esriPFS symbol with stroke', async () => {
+      const symbolDefinition = {
+        outline: {
+          color: [109, 187, 67, 255],
+          width: 0.4,
+          style: 'esriSLSSolid',
+          type: 'esriSLS',
+        },
+        imageData: 'fakeBase64ImageData',
+        type: 'esriPFS',
+        contentType: 'image/png',
+      }
+
+      const symbol = await readSymbol(symbolDefinition);
+
+      assert.isDefined(symbol);
+      assert.isDefined(symbol.fill);
+      assert.isDefined(symbol.stroke);
+      assert.equal(symbol.stroke.color, `rgba(${esriColorToOLColor(symbolDefinition.outline.color).join(',')})`);
+      assert.equal(symbol.stroke.width, symbolDefinition.outline.width);
+      assert.isArray(symbol.stroke.lineDash);
+      assert.isEmpty(symbol.stroke.lineDash);
     });
 });
