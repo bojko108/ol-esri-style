@@ -131,8 +131,8 @@ describe('[src/styles.js tests]', () => {
     };
     let styleDefinition;
 
-    before(() => {
-        styleDefinition = readEsriStyleDefinitions(drawingInfo);
+    before(async() => {
+        styleDefinition = await readEsriStyleDefinitions(drawingInfo);
         assert.isDefined(styleDefinition);
         assert.isArray(styleDefinition.featureStyles);
         // +1 because the default style is also added to the array of styles:

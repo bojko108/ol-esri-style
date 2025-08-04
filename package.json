@@ -17,7 +17,7 @@
   },
   "scripts": {
     "dev": "parcel example/index.html",
-    "test": "mocha ./tests/**/*.test.js",
+    "test": "mocha --require ./tests/setupTests.js --require jsdom-global/register ./tests/**/*.test.js",
     "test-watch": "mocha --watch --require @babel/polyfill --require @babel/register ./tests/**/*.test.js -r esm",
     "patch": "npm version patch --no-git-tag-version",
     "minor": "npm version minor --no-git-tag-version",

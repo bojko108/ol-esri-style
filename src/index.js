@@ -50,7 +50,7 @@ export const createStyleFunctionFromUrl = async (layerUrl, mapProjection) => {
  * @return {Promise<Function>} function used to style features
  */
 export const createStyleFunction = async (esriLayerInfoJson, mapProjection) => {
-    let { featureStyles, labelStyles } = readEsriStyleDefinitions(esriLayerInfoJson.drawingInfo);
+    let { featureStyles, labelStyles } = await readEsriStyleDefinitions(esriLayerInfoJson.drawingInfo);
     for (let i = 0; i < featureStyles.length; i++) {
         featureStyles[i].style = await createFeatureStyle(featureStyles[i]);
     }
@@ -119,7 +119,7 @@ export const createStyleFunction = async (esriLayerInfoJson, mapProjection) => {
  * @property {Array<import('./types').StyleType>} [styles.featureStyles]
  * @property {Array<import('./types').LabelType>} [styles.labelStyles]
  */
-export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
+export const readEsriStyleDefinitions = async ({ renderer, labelingInfo, transparency }) => {
     if (!renderer) throw 'renderer is not defined';
 
     /**
@@ -129,11 +129,11 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
     /**
      * @type {Array<import("./types").LabelType>}
      */
-    let labelStyles = labelingInfo ? readLabels(labelingInfo) : [];
+    let labelStyles = labelingInfo ? await readLabels(labelingInfo) : [];
 
     switch (renderer.type) {
         case 'simple':
-            featureStyles.push(readSymbol(renderer.symbol));
+            featureStyles.push(await readSymbol({ ...renderer.symbol, transparency }));
             break;
         case 'uniqueValue':
             const uniqueFieldValues = filterUniqueValues(renderer.uniqueValueInfos, renderer.fieldDelimiter);
@@ -168,7 +168,7 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
                     });
                 }
 
-                const style = readSymbol(uniqueField.symbol);
+                const style = await readSymbol(uniqueField.symbol);
                 featureStyles.push({
                     filters,
                     title: uniqueField.title,
@@ -177,7 +177,7 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
             }
 
             if (renderer.defaultSymbol) {
-                featureStyles.push(readSymbol(renderer.defaultSymbol));
+                featureStyles.push(await readSymbol(renderer.defaultSymbol));
             }
             break;
         case 'classBreaks':
@@ -186,7 +186,7 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
             const classBreakInfos = renderer.classBreakInfos;
             for (let i = 0; i < classBreakInfos.length; ++i) {
                 const classBreakInfo = classBreakInfos[i];
-                const style = readSymbol(classBreakInfo.symbol);
+                const style = await readSymbol(classBreakInfo.symbol);
 
                 /**
                  * @type {Array<import("./types").FilterType>}
@@ -207,7 +207,7 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
             }
 
             if (renderer.defaultSymbol) {
-                featureStyles.push(readSymbol(renderer.defaultSymbol));
+                featureStyles.push(await readSymbol(renderer.defaultSymbol));
             }
             break;
         default:
@@ -222,9 +222,9 @@ export const readEsriStyleDefinitions = ({ renderer, labelingInfo }) => {
  * @param {!Array<import('./types').EsriLabelDefinition>} labelingInfo
  * @return {Array<import('./types').LabelType>}
  */
-export const readLabels = (labelingInfo) => {
-    return labelingInfo.map((labelDefinition) => {
-        let labelStyle = readSymbol(labelDefinition.symbol);
+export const readLabels = async(labelingInfo) => {
+    return Promise.all(labelingInfo.map(async (labelDefinition) => {
+        let labelStyle = await readSymbol(labelDefinition.symbol);
         labelStyle.maxScale = labelDefinition.minScale || 1000;
         labelStyle.minScale = labelDefinition.maxScale || 0;
         labelStyle.text = (labelDefinition.labelExpression || '')
@@ -233,7 +233,7 @@ export const readLabels = (labelingInfo) => {
             .replace(/ CONCAT  NEWLINE  CONCAT /g, '\n')
             .replace(/ CONCAT /g, ' ');
         return labelStyle;
-    });
+    }));
 };
 
 /**
@@ -243,7 +243,7 @@ export const readLabels = (labelingInfo) => {
  * @return {import("./types").StyleType}
  * @see https://developers.arcgis.com/documentation/common-data-types/symbol-objects.htm
  */
-export const readSymbol = (symbol) => {
+export const readSymbol = async(symbol) => {
     switch (symbol.type) {
         case 'esriSMS':
             return {
@@ -271,7 +271,7 @@ export const readSymbol = (symbol) => {
                 },
             };
         case 'esriSFS':
-            let style = symbol.outline ? readSymbol(symbol.outline) : {};
+            let style = symbol.outline ? await readSymbol(symbol.outline) : {};
             style.fill = { color: `rgba(${esriColorToOLColor(symbol.color).join(',')})` };
             return style;
         case 'esriPMS':
@@ -313,6 +313,39 @@ export const readSymbol = (symbol) => {
                     } :
                     null,
             };
+        case "esriPFS":
+            if (!symbol.imageData) {
+            console.error("esriPFS symbol is missing imageData");
+            }
+            const canvasElement = document.createElement("canvas");
+            const canvasElementContext = canvasElement.getContext("2d");
+
+            const image = new Image();
+            image.src =
+            `data:${symbol.contentType ?? 'image/png'};base64,${symbol.imageData}`;
+            const stroke = symbol.outline ? (await readSymbol(symbol.outline)).stroke : {};// var ourline
+
+            return new Promise((resolve, reject) => {
+            image.onload = () => {
+                if (!canvasElementContext) {
+                reject(new Error("Failed to load image for esriPFS symbol pattern. No canvas context."));
+                return;
+                }
+                canvasElement.width = image.width;
+                canvasElement.height = image.height;
+                canvasElementContext.globalAlpha = symbol.transparency ? 1 - symbol.transparency / 100 : 1;
+                canvasElementContext.drawImage(image, 0, 0);
+                const pattern = canvasElementContext.createPattern(canvasElement, "repeat");
+
+                resolve({
+                stroke,
+                fill: {
+                    color: pattern,
+                }
+                });
+            };
+            image.onerror = () => reject(new Error("Failed to load image for esriPFS symbol pattern."));
+            });
         default:
             throw `Symbol type "${symbol.type}" is not implemented yet`;
     }

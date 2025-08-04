@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import { readLabels } from '../src/index.js';
 
 describe('[readLabels() tests]', () => {
-  it('should read label definitions', () => {
+  it('should read label definitions', async() => {
     const labelDefinitions = [
       {
         labelPlacement: 'esriServerPolygonPlacementAlwaysHorizontal',
@@ -37,7 +37,7 @@ describe('[readLabels() tests]', () => {
       },
     ];
 
-    const labels = readLabels(labelDefinitions);
+    const labels = await readLabels(labelDefinitions);
 
     assert.isArray(labels);
     assert.equal(labels.length, 1);
