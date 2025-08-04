@@ -46,6 +46,9 @@
     "@babel/register": "^7.27.1",
     "buffer": "^6.0.3",
     "chai": "^5.2.1",
+    "chai-as-promised": "^8.0.1",
+    "jsdom": "26.1.0",
+    "jsdom-global": "3.0.2",
     "esm": "^3.2.25",
     "mocha": "^11.7.1",
     "parcel": "^2.15.4"
