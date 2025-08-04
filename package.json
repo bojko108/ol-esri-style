@@ -1,9 +1,20 @@
 {
   "name": "ol-esri-style",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Convert ESRI styles to OpenLayers styles",
   "main": "src/index.js",
   "type": "module",
+  "targets": {
+    "main": {
+      "source": "src/index.js",
+      "outputFormat": "esmodule",
+      "isLibrary": true
+    },
+    "browser": {
+      "source": "example/index.html",
+      "context": "browser"
+    }
+  },
   "scripts": {
     "dev": "parcel example/index.html",
     "test": "mocha --require ./tests/setupTests.js --require jsdom-global/register ./tests/**/*.test.js",
@@ -28,17 +39,15 @@
   },
   "homepage": "https://github.com/bojko108/ol-esri-style#readme",
   "dependencies": {
-    "ol": "^6.14.1"
+    "ol": "^10.6.1"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.12.1",
-    "@babel/register": "^7.12.13",
-    "chai": "^4.3.0",
-    "chai-as-promised": "^8.0.1",
+    "@babel/register": "^7.27.1",
+    "buffer": "^6.0.3",
+    "chai": "^5.2.1",
     "esm": "^3.2.25",
-    "jsdom": "26.1.0",
-    "jsdom-global": "3.0.2",
-    "mocha": "^8.2.1",
-    "parcel": "^2.0.0-beta.1"
+    "mocha": "^11.7.1",
+    "parcel": "^2.15.4"
   }
 }
