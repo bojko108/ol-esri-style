@@ -283,13 +283,24 @@ export const readSymbol = async(symbol) => {
                 },
             };
         case 'esriTS':
+            const validTextBaseline = [
+                'bottom',
+                'top',
+                'middle',
+                'alphabetic',
+                'hanging',
+                'ideographic',
+            ].includes(symbol.verticalAlignment ?? '')
+                ? symbol.verticalAlignment
+                : undefined 
+
             return {
                 text: symbol.text,
                 font: symbol.font ? `${symbol.font.style} ${symbol.font.weight} ${symbol.font.size}pt ${symbol.font.family}` : '20px Calibri,sans-serif',
                 offsetX: symbol.xoffset + 20,
                 offsetY: symbol.yoffset - 10,
                 textAlign: symbol.horizontalAlignment,
-                textBaseline: symbol.verticalAlignment,
+                textBaseline: validTextBaseline,
                 padding: [5, 5, 5, 5],
                 angle: symbol.angle,
                 fill: symbol.color ? { color: `rgba(${esriColorToOLColor(symbol.color).join(',')})` } : null,

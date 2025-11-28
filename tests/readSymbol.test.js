@@ -176,6 +176,19 @@ describe('[readSymbol() tests]', () => {
         assert.isNull(symbol.backgroundFill);
         assert.isNull(symbol.backgroundStroke);
     });
+  it('should read esriTS symbol and not use invalid textBaseline values', async () => {
+    const symbolDefinition = {
+      type: 'esriTS',
+      verticalAlignment: 'baseline',
+    
+    };
+
+    const symbol = await readSymbol(symbolDefinition);
+
+    assert.isDefined(symbol);
+    assert.equal(symbol.textBaseline, undefined);
+
+  });
     it('should read esriPFS symbol without stroke', async () => {
       const symbolDefinition = {
         imageData: 'fakeBase64ImageData',
