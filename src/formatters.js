@@ -1,17 +1,28 @@
+const getLabelIdValue = (feature, labelExpression,) => labelExpression.replace('$id', feature.getId().toString())
+
 /**
- * Formats the label of a feature. The label can contain $id, {ATTRIBUTE_NAME}...
+ * Gets the label value from feature data based on the label expression. The label can contain $id, {ATTRIBUTE_NAME}...
  * @param {!import('ol/Feature').default} feature
- * @param {!String} mask
+ * @param {!String} labelExpression
  * @return {String}
  */
-export const getFormattedLabel = (feature, mask) => {
-  if (mask.includes('$id')) mask = mask.replace('$id', feature.getId().toString());
-
-  if (mask.includes('{')) {
-    return formatObject(mask, feature.getProperties());
-  } else {
-    return mask;
+export const getLabelValue = (feature, labelExpression) => {
+  if (labelExpression?.startsWith('{') && labelExpression?.endsWith('}')) {
+    const propertyName = labelExpression.slice(1, -1)
+    const featurePropertiesWithLowercaseKeys = Object.fromEntries(Object.entries(feature.getProperties()).map(([key, value]) => [key.toLowerCase(), value]))
+    return featurePropertiesWithLowercaseKeys[propertyName.toLowerCase()]
   }
+  if (labelExpression.includes('{')) {
+    const id = getLabelIdValue(feature, labelExpression)
+
+    return formatObject(id, feature.getProperties());
+  } 
+  if (labelExpression.includes('$id')) {
+    return getLabelIdValue(feature, labelExpression)
+  }
+
+  return labelExpression;
+
 };
 
 /**
