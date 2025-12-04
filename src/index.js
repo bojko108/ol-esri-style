@@ -21,9 +21,6 @@ const lineDashPattern = {
  * @return {Array<Number>} OpenLayers color in [R, G, B, A] format with alpha normalized to [0, 1]
  */
 export const esriColorToOLColor = (esriColor) => {
-  console.log(esriColor);
-  //   debugger;
-  //   const buffy = esriColor ? esriColor : [0, 0, 0, 0];
   const [r, g, b, a = 255] = esriColor;
 
   // Clamp alpha to [0, 255] and normalize to [0, 1]
@@ -279,8 +276,6 @@ export const readLabels = async (labelingInfo) => {
  * @see https://developers.arcgis.com/documentation/common-data-types/symbol-objects.htm
  */
 export const readSymbol = async (symbol) => {
-  console.log("$$$$$$$$", symbol);
-  debugger;
   switch (symbol.type) {
     case "esriSMS":
       return {
