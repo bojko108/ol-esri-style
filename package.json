@@ -1,6 +1,6 @@
 {
   "name": "ol-esri-style",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Convert ESRI styles to OpenLayers styles",
   "main": "src/index.js",
   "type": "module",
