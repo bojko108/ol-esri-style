@@ -2,7 +2,7 @@
  * Gets the label value from feature data based on the label expression. 
  * The label can contain placeholders like $id, {ATTRIBUTE_NAME}. Casing is ignored for attribute names!
  * @param {!import('ol/Feature').default} feature
- * @param {!String} labelExpression
+ * @param {!String} mask
  * @return {String}
  */
 export const getFormattedLabel = (feature, mask) => {
