@@ -1,7 +1,7 @@
 import { METERS_PER_UNIT } from 'ol/proj/Units.js';
 import Style from 'ol/style/Style.js';
 import { createFeatureStyle, createLabelStyle } from './styles.js';
-import { getLabelValue } from './formatters.js';
+import { getFormattedLabel } from './formatters.js';
 
 /**
  * // https://developers.arcgis.com/documentation/common-data-types/symbol-objects.htm
@@ -97,8 +97,7 @@ export const createStyleFunction = async (esriLayerInfoJson, mapProjection) => {
         });
 
         if (labelStyle && labelStyle.style) {
-            const labelText = getLabelValue(feature, labelStyle.label);
-           
+            const labelText = getFormattedLabel(feature, labelStyle.label);
             labelStyle.style.getText().setText(labelText);
             styles.push(labelStyle.style);
         }

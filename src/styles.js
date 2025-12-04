@@ -55,7 +55,7 @@ export const createFeatureStyle = async(styleData) => {
 
 /**
  * Creates a text style. `text` property is not formatted, which means that it can contain $id, {ATTRIBUTE_NAME}...
- * Before the feature is drawn on the map you can call `getLabelValue` to create the actual text displayed on the map.
+ * Before the feature is drawn on the map you can call `getFormattedLabel` to create the actual text displayed on the map.
  *
  * @param {import('./types').LabelType} labelData
  * @return {Text}
