@@ -113,13 +113,12 @@ export const createStyleFunction = async (esriLayerInfoJson, mapProjection) => {
       );
     });
 
-    if (labelStyle && labelStyle.style) {
-      const text = getFormattedLabel(feature, labelStyle.label);
-      labelStyle.style.getText().setText(text);
-      styles.push(labelStyle.style);
-    }
-
-    // push labels!
+        if (labelStyle && labelStyle.style) {
+            const labelText = getFormattedLabel(feature, labelStyle.label);
+            labelStyle.style.getText().setText(labelText);
+            styles.push(labelStyle.style);
+        }
+        // push labels!
 
     return styles.length > 0 ? styles : null;
   };
@@ -297,7 +296,6 @@ export const readSymbol = async (symbol) => {
         },
       };
     case "esriSLS":
-      //   symbol.color = symbol.color ? symbol.color : [0, 0, 0, 0];
       return {
         stroke: {
           color: symbol.color
