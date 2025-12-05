@@ -273,6 +273,19 @@ export const readLabels = async (labelingInfo) => {
 };
 
 /**
+ * Valid text baseline values
+ * @type {String[]}
+ */
+const validTextBaseline = [
+    'bottom',
+    'top',
+    'middle',
+    'alphabetic',
+    'hanging',
+    'ideographic',
+];
+
+/**
  * Convert ESRI style data to a readable style definition
  * @param {!esriPMS|esriSFS|esriSLS|esriSMS|esriTS} symbol - ESRI style definition
  * @param {!String} symbol.type - valid values are: `esriSMS`, `esriSLS`, `esriSFS`, `esriPMS` and `esriTS`
@@ -325,6 +338,10 @@ export const readSymbol = async (symbol) => {
                 },
             };
         case 'esriTS':
+            const textBaseline = validTextBaseline.includes(symbol.verticalAlignment ?? '')
+                ? symbol.verticalAlignment
+                : undefined;
+
             return {
                 text: symbol.text,
                 font: symbol.font
@@ -333,7 +350,7 @@ export const readSymbol = async (symbol) => {
                 offsetX: symbol.xoffset + 20,
                 offsetY: symbol.yoffset - 10,
                 textAlign: symbol.horizontalAlignment,
-                textBaseline: symbol.verticalAlignment,
+                textBaseline: textBaseline,
                 padding: [5, 5, 5, 5],
                 angle: symbol.angle,
                 fill: symbol.color
