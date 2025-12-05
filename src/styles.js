@@ -14,7 +14,7 @@ import { toRadians } from 'ol/math.js';
  * @param {import('./types').StyleType} [styleData]
  * @return {Promise<Style>}
  */
-export const createFeatureStyle = async(styleData) => {
+export const createFeatureStyle = async (styleData) => {
     if (!styleData.icon) {
         styleData.icon = null;
     }
@@ -45,8 +45,12 @@ export const createFeatureStyle = async(styleData) => {
     }
     if (styleData.circle) {
         const radius = styleData.circle.radius;
-        const circleFill = styleData.circle.fill ? new Fill(styleData.circle.fill) : null;
-        const circleStroke = styleData.circle.stroke ? new Stroke(styleData.circle.stroke) : null;
+        const circleFill = styleData.circle.fill
+            ? new Fill(styleData.circle.fill)
+            : null;
+        const circleStroke = styleData.circle.stroke
+            ? new Stroke(styleData.circle.stroke)
+            : null;
         image = new Circle({ radius, fill: circleFill, stroke: circleStroke });
     }
 
@@ -64,12 +68,24 @@ export const createLabelStyle = (labelData) => {
     const rotation = toRadians(labelData.rotation || 0);
     const fill = labelData.fill ? new Fill(labelData.fill) : null;
     const stroke = labelData.stroke ? new Stroke(labelData.stroke) : null;
-    const backgroundFill = labelData.backgroundFill ? new Fill(labelData.backgroundFill) : null;
-    const backgroundStroke = labelData.backgroundStroke ? new Stroke(labelData.backgroundStroke) : null;
+    const backgroundFill = labelData.backgroundFill
+        ? new Fill(labelData.backgroundFill)
+        : null;
+    const backgroundStroke = labelData.backgroundStroke
+        ? new Stroke(labelData.backgroundStroke)
+        : null;
 
     // text will be a template - can include: $id, {ATTRIBUTE_NAME}...
     // before the feature is drawn on the map it will be formatted based of feature attribute values
-    return new Text(Object.assign({}, labelData, { rotation, fill, stroke, backgroundFill, backgroundStroke }));
+    return new Text(
+        Object.assign({}, labelData, {
+            rotation,
+            fill,
+            stroke,
+            backgroundFill,
+            backgroundStroke,
+        })
+    );
 };
 
 const loadImage = (imgSrc) => {

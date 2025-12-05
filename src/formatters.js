@@ -1,26 +1,26 @@
 /**
- * Gets the label value from feature data based on the label expression. 
+ * Gets the label value from feature data based on the label expression.
  * The label can contain placeholders like $id, {ATTRIBUTE_NAME}. Casing is ignored for attribute names!
  * @param {!import('ol/Feature').default} feature
  * @param {!String} mask
  * @return {String}
  */
 export const getFormattedLabel = (feature, mask) => {
-  if (mask.includes('$id')) {
-    mask = mask.replace('$id', feature.getId().toString());
-  }
+    if (mask.includes('$id')) {
+        mask = mask.replace('$id', feature.getId().toString());
+    }
 
-  const ignoreCase = true;  // add this as a param if needed in future
+    const ignoreCase = true; // add this as a param if needed in future
 
-  if (mask.includes('{')) {
-    return formatObject(mask, feature.getProperties(), true, ignoreCase);
-  } else {
-    return mask;
-  }
+    if (mask.includes('{')) {
+        return formatObject(mask, feature.getProperties(), true, ignoreCase);
+    } else {
+        return mask;
+    }
 };
 
 /**
- * Format a template string based on provided object with values (placeholders). 
+ * Format a template string based on provided object with values (placeholders).
  * Case-insensitive resolution added through ignoreCase flag.
  * @param {!String} mask
  * @param {!Object.<String,*>} object - object, containing the field names and their values
@@ -39,31 +39,44 @@ export const getFormattedLabel = (feature, mask) => {
  * // 'Foo: bar ({nonExistingProperty})'
  * @return {String}
  */
-export const formatObject = function(mask, object, removeLeftovers = true, ignoreCase = false) {
-  let result = mask;
+export const formatObject = function (
+    mask,
+    object,
+    removeLeftovers = true,
+    ignoreCase = false
+) {
+    let result = mask;
 
-  // If ignoring case, build an all-lowercase lookup table
-  let lookup = null;
-  if (ignoreCase) {
-    lookup = {};
-    for (let key in object) {
-      lookup[key.toLowerCase()] = object[key];
-    }
-  }
-
-  // Replace placeholders
-  // This regex matches {AnyTextInside}
-  const placeholderRegex = /\{([^}]+)\}/gm;
-
-  result = result.replace(placeholderRegex, (match, name) => {
+    // If ignoring case, build an all-lowercase lookup table
+    let lookup = null;
     if (ignoreCase) {
-      const key = name.toLowerCase();
-      return lookup.hasOwnProperty(key) ? lookup[key] : (removeLeftovers ? '' : match);
-    } else {
-      // original behavior
-      return object.hasOwnProperty(name) ? object[name] : (removeLeftovers ? '' : match);
+        lookup = {};
+        for (let key in object) {
+            lookup[key.toLowerCase()] = object[key];
+        }
     }
-  });
 
-  return result;
+    // Replace placeholders
+    // This regex matches {AnyTextInside}
+    const placeholderRegex = /\{([^}]+)\}/gm;
+
+    result = result.replace(placeholderRegex, (match, name) => {
+        if (ignoreCase) {
+            const key = name.toLowerCase();
+            return lookup.hasOwnProperty(key)
+                ? lookup[key]
+                : removeLeftovers
+                  ? ''
+                  : match;
+        } else {
+            // original behavior
+            return object.hasOwnProperty(name)
+                ? object[name]
+                : removeLeftovers
+                  ? ''
+                  : match;
+        }
+    });
+
+    return result;
 };
