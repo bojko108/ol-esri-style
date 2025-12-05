@@ -21,7 +21,8 @@
     "test-watch": "mocha --watch --require @babel/polyfill --require @babel/register ./tests/**/*.test.js -r esm",
     "patch": "npm version patch --no-git-tag-version",
     "minor": "npm version minor --no-git-tag-version",
-    "major": "npm version major --no-git-tag-version"
+    "major": "npm version major --no-git-tag-version",
+    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -47,10 +48,11 @@
     "buffer": "^6.0.3",
     "chai": "^5.2.1",
     "chai-as-promised": "^8.0.1",
+    "esm": "^3.2.25",
     "jsdom": "26.1.0",
     "jsdom-global": "3.0.2",
-    "esm": "^3.2.25",
     "mocha": "^11.7.1",
-    "parcel": "^2.15.4"
+    "parcel": "^2.15.4",
+    "prettier": "^3.7.4"
   }
 }
